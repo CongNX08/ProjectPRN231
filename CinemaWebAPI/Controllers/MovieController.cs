@@ -20,7 +20,7 @@ namespace CinemaWebAPI.Controllers
         }
 
         // //////////////////////////Get All data
-        [HttpGet("GetAllMovie")]
+        [HttpGet()]
         public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
         {
 
@@ -95,7 +95,7 @@ namespace CinemaWebAPI.Controllers
 
 
         //////////////// DELETE/////////////////////////
-        [HttpDelete("{Movie_id:int}", Name = "DeleteMovie")]
+        [HttpDelete( Name = "DeleteMovie")]
         public async Task<ActionResult> DeleteMovie(int id)
         {
 
