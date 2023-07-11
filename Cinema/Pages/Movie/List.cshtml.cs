@@ -28,8 +28,7 @@ namespace Cinema.Pages.Movie
             {
                 PropertyNameCaseInsensitive = true
             };
-            Movies = JsonSerializer.Deserialize<List<MovieDTO>>(strData, options);   
-            
+            Movies = JsonSerializer.Deserialize<List<MovieDTO>>(strData, options);              
 
         }
 

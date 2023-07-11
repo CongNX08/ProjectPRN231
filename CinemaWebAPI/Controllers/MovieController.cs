@@ -66,10 +66,29 @@ namespace CinemaWebAPI.Controllers
             }
 
             ////////////////////// dung AutoMapper/////////
-            Movie newMovie = _mapper.Map<Movie>(MovieCreate);
+            //Movie newMovie = _mapper.Map<Movie>(MovieCreate);
+            //await _dbMovie.CreateAsync(newMovie);
+
+            //return CreatedAtRoute("GetOneMovie", new { Movie_id = newMovie.MovieId }, newMovie);       // Ok   
+
+            // Tạo đối tượng Movie từ MovieCreate và gán Genre
+            var newMovie = new Movie
+            {
+                Title = MovieCreate.Title,
+                Year = MovieCreate.Year,
+                Image = MovieCreate.Image,
+                Description = MovieCreate.Description,
+                GenreId = MovieCreate.GenreId,
+            
+            };
+
+            // Thực hiện tạo mới Movie
             await _dbMovie.CreateAsync(newMovie);
 
-            return CreatedAtRoute("GetOneMovie", new { Movie_id = newMovie.MovieId }, newMovie);       // Ok   
+            // Ánh xạ lại đối tượng Movie sau khi tạo thành công
+            var createdMovieDto = _mapper.Map<MovieDTO>(newMovie);
+
+            return CreatedAtRoute("GetOneMovie", new { Movie_id = createdMovieDto.MovieId }, createdMovieDto);
         }
 
 

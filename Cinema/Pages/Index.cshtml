@@ -1,10 +1,63 @@
 ﻿@page
 @model IndexModel
-@{
-    ViewData["Title"] = "Home page";
-}
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@{
+    //ViewData["Title"] = "Home page";
+}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Flowbite -->
+<link rel="stylesheet"
+      href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+
+<!-- Font Awseome -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+
+
+
+<div class="flex justify-center">
+    <img class=" w-4/5 object-cover" src="~/images/slide.jpg" />
 </div>
+
+
+<div class="grid grid-cols-2 gap-4 mt-12 ">
+    @foreach (var item in Model.Movies)
+    {
+        <div class="flex text-sm w-full h-72 text-center border-collapse border border-slate-400 bg-gray-100 ">
+
+            <div class="w-2/5  pt-3 ml-3">
+                <div>
+                    <img class="w-72 h-48 " style="border-radius:20px;" src="@item.Image" alt="FirstSilde"> 
+                 </div>
+                <div class=" mt-8">
+                    <a href="" class="px-8 py-2 text-sm border border-gray-300 bg-green-500 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm mt-96 text-center text-white">View</a>
+                </div>
+            </div>
+
+            <div class="w-3/5  m-3 ">
+                <p class="text-3xl mb-2 text-orange-300  ">@item.Title</p>
+                <p class="text-xl">
+                    @item.Description
+                </p>
+                <div class="text-xl mt-3 justify-center">                                     
+                        <div class="">Year: @item.Year
+                        <i class="fas fa-calendar" style="color: #ec4109;"></i>
+                    </div>
+                    <div class="pt-1">Rate: @item.RatingPoint
+                            <i class="fas fa-star" style="color: #ffea00;"></i>
+                        </div>                  
+                </div>
+            </div>
+
+            
+
+
+        </div>
+    }
+
+       
+    
+</div>
+
