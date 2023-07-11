@@ -1,4 +1,94 @@
 ﻿@page
 @model Cinema.Pages.Movie.ListModel
 @{
+    //ViewData["Title"] = "Movie List";
 }
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Flowbite -->
+<link rel="stylesheet"
+      href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+
+<!-- Font Awseome -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+<div class="col-span-8 p-8">
+    <div class="text-3xl font-medium border-b-2 mb-6 py-4">Movie List</div>
+    <div class="container mx-auto flex ">
+
+
+        <form method="post" id="form-1"
+              class=" w-full ">
+
+            <table class="text-sm w-full text-center border-collapse border border-slate-400  mb-8">
+                <thead class="text-lg font-medium text-gray-900 bg-gray-200  ">
+                    <tr>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            Title
+                        </th>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            Description
+                        </th>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            [GenreId]
+                        </th>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            [Year]
+                        </th>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            [RatingPoint]
+                        </th>
+
+                        <th scope="col" class=" py-3 px-8 border border-slate-300">
+                            [Image]
+                        </th>
+
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Movies)
+                    {
+
+                        <tr class="bg-white border-b bg-gray-50 text-gray-600">
+                            <td scope="row" class="py-4 px-8 border border-slate-300">@item.Title</td>
+                            <td class="py-4 px-8 border border-slate-300">@item.Description</td>
+                            <td class="py-4 px-8 border border-slate-300">@item.GenreId</td>
+                            <td class="py-4 px-8 border border-slate-300">@item.Year</td>
+                            <td class="py-4 px-8 border border-slate-300">@item.RatingPoint</td>
+                            <td class="py-4 px-8 border border-slate-300">
+                                <img class="object-cover h-48 w-96 " src="@item.Image" />
+                            </td>
+
+
+                            <td class="py-4 px-6 border border-slate-300 text-blue-600">
+                                <a asp-page="./Edit" asp-route-id="@item.MovieId">Edit</a>
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+
+                                <button type="submit" asp-route-deleteID="@item.MovieId">
+                                    Delete
+                                    
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                              
+                            </td>
+                        </tr>
+
+                    }
+
+                </tbody>
+            </table>
+            <div class="flex justify-center pt-4">
+                <button class="text-sm border border-gray-300 bg-green-500 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  px-4 py-3 text-center text-white">
+
+                    <a asp-action="Create"> <i class="fa fa-plus pr-2" aria-hidden="true"></i>Create New</a>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

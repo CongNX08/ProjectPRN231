@@ -1,15 +1,18 @@
-namespace Cinema
+﻿namespace Cinema
 {
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddHttpClient();
 
             // Add services to the container.
             builder.Services.AddRazorPages();
 
+
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -27,6 +30,12 @@ namespace Cinema
             app.UseAuthorization();
 
             app.MapRazorPages();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapFallbackToPage("/Movie/List"); // Thiết lập trang mặc định là /Movie/List
+            });
 
             app.Run();
         }

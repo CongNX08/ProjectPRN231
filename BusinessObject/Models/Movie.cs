@@ -26,10 +26,6 @@ namespace BusinessObject.Models
 
         public virtual Genre Genre { get; set; }
         public virtual ICollection<Rate> Rates { get; set; }
-       
 
-       
-
-      
     }
 }
