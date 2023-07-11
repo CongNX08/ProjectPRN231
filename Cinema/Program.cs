@@ -30,12 +30,12 @@
             app.UseAuthorization();
 
             app.MapRazorPages();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
-                endpoints.MapDefaultControllerRoute();
-                endpoints.MapFallbackToPage("/Movie/List"); // Thiết lập trang mặc định là /Movie/List
-            });
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapRazorPages();
+            //    endpoints.MapDefaultControllerRoute();
+            //    endpoints.MapFallbackToPage("/Movie/List"); // Thiết lập trang mặc định là /Movie/List
+            //});
 
             app.Run();
         }
