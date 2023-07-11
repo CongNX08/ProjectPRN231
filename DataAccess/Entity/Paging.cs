@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,19 +15,18 @@ namespace DataAccess.Entity
         public int PageSize { get; set; }
         public Paging(int PageSize, int TotalRow, int PageIndex)
         {
-            TotalRecord = TotalRow;
+            this.TotalRecord = TotalRow;
             this.PageSize = PageSize;
+            this.PageIndex = PageIndex;
             if (TotalRow > 0)
             {
-                int LastPageCal = TotalRow / PageSize;
+                int LastPageCal = (TotalRow / PageSize) > 0 ? (TotalRow / PageSize) : 0;
                 if (TotalRow % PageSize != 0)
                 {
                     LastPageCal += 1;
                 }
-                LastPage = LastPageCal;
+                this.LastPage = LastPageCal;
             }
-            LastPage = 1;
-            PageIndex = 1;
         }
 
     }

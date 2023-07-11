@@ -6,6 +6,7 @@ using DataAccess.Entity;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace CinemaWebAPI.Controllers
 {
@@ -31,15 +32,30 @@ namespace CinemaWebAPI.Controllers
         //    return Ok(MovieDTOList);
         //}
 
-        //Lay danh sach phim co phan trang
+        //Lấy danh sách phim có phân trang
         [HttpGet()]
         public async Task<ActionResult<MovieResponse>> GetMovies(int PageSize, int PageIndex)
         {
-
-            IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, x => x.Genre);
+            Expression<Func<Movie, object>>[] includes = { m => m.Rates, m => m.Genre };
+            IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, includes);
+            //Vì trong object movie có trường RatingPoint nên phải chạy vòng lặp để set value. Sau đó mapping value sang DTO
+            foreach (var movie in MovieList)
+            {
+                decimal? RatingPoint = movie.Rates.Average(r => r.NumericRating);
+                if (!RatingPoint.HasValue)
+                {
+                    RatingPoint = 0;
+                }
+                movie.RatingPoint = RatingPoint;
+            }
             IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
             MovieResponse movieResponse = new MovieResponse();
-            movieResponse.Data = MovieDTOList.ToList();
+            //TODO: Chỗ này nên phân trang từ repository để tránh ảnh hưởng performance
+            movieResponse.Data = MovieDTOList
+                        .OrderBy(b => b.MovieId)
+                        .Skip((PageIndex - 1) * PageSize)
+                        .Take(PageSize)
+                        .ToList();
             Paging paging = new Paging(PageSize, MovieDTOList.Count(), PageIndex);
             movieResponse.Paging = paging;
             return Ok(movieResponse);
