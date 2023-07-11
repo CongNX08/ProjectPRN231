@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BusinessObject.Models;
+using CinemaWebAPI.Response.Movie;
 using DataAccess.DTO;
+using DataAccess.Entity;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,15 +22,28 @@ namespace CinemaWebAPI.Controllers
         }
 
         // //////////////////////////Get All data
+        //[HttpGet()]
+        //public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
+        //{
+
+        //    IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, x => x.Genre);
+        //    IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
+        //    return Ok(MovieDTOList);
+        //}
+
+        //Lay danh sach phim co phan trang
         [HttpGet()]
-        public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
+        public async Task<ActionResult<MovieResponse>> GetMovies(int PageSize, int PageIndex)
         {
 
             IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, x => x.Genre);
             IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
-            return Ok(MovieDTOList);
+            MovieResponse movieResponse = new MovieResponse();
+            movieResponse.Data = MovieDTOList.ToList();
+            Paging paging = new Paging(PageSize, MovieDTOList.Count(), PageIndex);
+            movieResponse.Paging = paging;
+            return Ok(movieResponse);
         }
-
 
         // ////////////////////////Get One data
         [HttpGet("{Movie_id:int}", Name = "GetOneMovie")] // notedasssssssssssss
@@ -95,7 +110,7 @@ namespace CinemaWebAPI.Controllers
 
 
         //////////////// DELETE/////////////////////////
-        [HttpDelete( Name = "DeleteMovie")]
+        [HttpDelete(Name = "DeleteMovie")]
         public async Task<ActionResult> DeleteMovie(int id)
         {
 
