@@ -22,7 +22,7 @@ namespace CinemaWebAPI.Controllers
             _mapper = mapper;
         }
 
-        // //////////////////////////Get All data
+        //////////////////////////Get All data
         //[HttpGet()]
         //public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
         //{
@@ -34,7 +34,7 @@ namespace CinemaWebAPI.Controllers
 
         //Lấy danh sách phim có phân trang
         [HttpGet()]
-        public async Task<ActionResult<MovieResponse>> GetMovies(int PageSize, int PageIndex)
+        public async Task<ActionResult<MovieResponse>> GetMovies(int PageSize = 10, int PageIndex = 1)
         {
             Expression<Func<Movie, object>>[] includes = { m => m.Rates, m => m.Genre };
             IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, includes);
@@ -52,10 +52,10 @@ namespace CinemaWebAPI.Controllers
             MovieResponse movieResponse = new MovieResponse();
             //TODO: Chỗ này nên phân trang từ repository để tránh ảnh hưởng performance
             movieResponse.Data = MovieDTOList
-                        .OrderBy(b => b.MovieId)
-                        .Skip((PageIndex - 1) * PageSize)
-                        .Take(PageSize)
-                        .ToList();
+                .OrderBy(b => b.MovieId)
+                .Skip((PageIndex - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
             Paging paging = new Paging(PageSize, MovieDTOList.Count(), PageIndex);
             movieResponse.Paging = paging;
             return Ok(movieResponse);
@@ -110,7 +110,7 @@ namespace CinemaWebAPI.Controllers
                 Image = MovieCreate.Image,
                 Description = MovieCreate.Description,
                 GenreId = MovieCreate.GenreId,
-            
+
             };
 
             // Thực hiện tạo mới Movie
