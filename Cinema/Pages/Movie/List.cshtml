@@ -33,17 +33,17 @@
                             Description
                         </th>
                         <th scope="col" class="py-3 px-8 border border-slate-300">
-                            [GenreId]
+                            Genre
                         </th>
                         <th scope="col" class="py-3 px-8 border border-slate-300">
-                            [Year]
+                            Year
                         </th>
                         <th scope="col" class="py-3 px-8 border border-slate-300">
-                            [RatingPoint]
+                            RatingPoint
                         </th>
 
                         <th scope="col" class=" py-3 px-8 border border-slate-300">
-                            [Image]
+                            Image
                         </th>
 
                         <th scope="col" class="py-3 px-8 border border-slate-300">
@@ -55,7 +55,7 @@
                     @foreach (var item in Model.Movies)
                     {
 
-                        <tr class="bg-white border-b bg-gray-50 text-gray-600">
+                        <tr class="bg-white border-b bg-gray-50 text-back-900">
                             <td scope="row" class="py-4 px-8 border border-slate-300">@item.Title</td>
                             <td class="py-4 px-8 border border-slate-300">@item.Description</td>
                             <td class="py-4 px-8 border border-slate-300">@item.GenreId</td>
@@ -66,13 +66,14 @@
                             </td>
 
 
-                            <td class="py-4 px-6 border border-slate-300 text-blue-600">
-                                <a asp-page="./Edit" asp-route-id="@item.MovieId">Edit</a>
-                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                            <td class="py-4 px-6 border border-slate-300 text-blue-600 text-2xl">
+                                <a asp-page="./Edit" asp-route-id="@item.MovieId">Edit
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </a>
+                               
 
                                 <button type="submit" asp-route-deleteID="@item.MovieId">
-                                    Delete
-                                    
+                                    Delete                                 
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </button>
                               

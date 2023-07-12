@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using BusinessObject.Models;
+using CinemaWebAPI.Response.Movie;
 using DataAccess.DTO;
+using DataAccess.Entity;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace CinemaWebAPI.Controllers
 {
@@ -20,15 +23,43 @@ namespace CinemaWebAPI.Controllers
         }
 
         // //////////////////////////Get All data
+        //[HttpGet()]
+        //public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
+        //{
+
+        //    IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, x => x.Genre);
+        //    IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
+        //    return Ok(MovieDTOList);
+        //}
+
+        //Lấy danh sách phim có phân trang
         [HttpGet()]
-        public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
+        public async Task<ActionResult<MovieResponse>> GetMovies(int PageSize, int PageIndex)
         {
-
-            IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, x => x.Genre);
+            Expression<Func<Movie, object>>[] includes = { m => m.Rates, m => m.Genre };
+            IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, includes);
+            //Vì trong object movie có trường RatingPoint nên phải chạy vòng lặp để set value. Sau đó mapping value sang DTO
+            foreach (var movie in MovieList)
+            {
+                decimal? RatingPoint = movie.Rates.Average(r => r.NumericRating);
+                if (!RatingPoint.HasValue)
+                {
+                    RatingPoint = 0;
+                }
+                movie.RatingPoint = RatingPoint;
+            }
             IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
-            return Ok(MovieDTOList);
+            MovieResponse movieResponse = new MovieResponse();
+            //TODO: Chỗ này nên phân trang từ repository để tránh ảnh hưởng performance
+            movieResponse.Data = MovieDTOList
+                        .OrderBy(b => b.MovieId)
+                        .Skip((PageIndex - 1) * PageSize)
+                        .Take(PageSize)
+                        .ToList();
+            Paging paging = new Paging(PageSize, MovieDTOList.Count(), PageIndex);
+            movieResponse.Paging = paging;
+            return Ok(movieResponse);
         }
-
 
         // ////////////////////////Get One data
         [HttpGet("{Movie_id:int}", Name = "GetOneMovie")] // notedasssssssssssss
@@ -66,10 +97,29 @@ namespace CinemaWebAPI.Controllers
             }
 
             ////////////////////// dung AutoMapper/////////
-            Movie newMovie = _mapper.Map<Movie>(MovieCreate);
+            //Movie newMovie = _mapper.Map<Movie>(MovieCreate);
+            //await _dbMovie.CreateAsync(newMovie);
+
+            //return CreatedAtRoute("GetOneMovie", new { Movie_id = newMovie.MovieId }, newMovie);       // Ok   
+
+            // Tạo đối tượng Movie từ MovieCreate và gán Genre
+            var newMovie = new Movie
+            {
+                Title = MovieCreate.Title,
+                Year = MovieCreate.Year,
+                Image = MovieCreate.Image,
+                Description = MovieCreate.Description,
+                GenreId = MovieCreate.GenreId,
+            
+            };
+
+            // Thực hiện tạo mới Movie
             await _dbMovie.CreateAsync(newMovie);
 
-            return CreatedAtRoute("GetOneMovie", new { Movie_id = newMovie.MovieId }, newMovie);       // Ok   
+            // Ánh xạ lại đối tượng Movie sau khi tạo thành công
+            var createdMovieDto = _mapper.Map<MovieDTO>(newMovie);
+
+            return CreatedAtRoute("GetOneMovie", new { Movie_id = createdMovieDto.MovieId }, createdMovieDto);
         }
 
 
@@ -95,7 +145,7 @@ namespace CinemaWebAPI.Controllers
 
 
         //////////////// DELETE/////////////////////////
-        [HttpDelete( Name = "DeleteMovie")]
+        [HttpDelete(Name = "DeleteMovie")]
         public async Task<ActionResult> DeleteMovie(int id)
         {
 
