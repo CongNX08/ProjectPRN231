@@ -1,10 +1,13 @@
 using DataAccess.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Cinema.Pages.Movie
 {
@@ -18,7 +21,7 @@ namespace Cinema.Pages.Movie
         }
 
         public List<MovieDTO> Movies { get; set; } = new List<MovieDTO>();
-       
+
 
         public async Task OnGet()
         {
@@ -28,7 +31,10 @@ namespace Cinema.Pages.Movie
             {
                 PropertyNameCaseInsensitive = true
             };
-            Movies = JsonSerializer.Deserialize<List<MovieDTO>>(strData, options);              
+
+            dynamic dataObj = JsonConvert.DeserializeObject(strData);
+            string data = dataObj.data.ToString();
+            Movies = System.Text.Json.JsonSerializer.Deserialize<List<MovieDTO>>(data, options);
 
         }
 
