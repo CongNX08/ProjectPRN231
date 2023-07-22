@@ -84,13 +84,11 @@ namespace DataAccess.Repository
                 query = query.Where(filter);
             }
 
-            if (includes != null && includes.Length > 0)
+            foreach (var include in includes)
             {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
+                query = query.Include(include);
             }
+
             return await query.ToListAsync();
         }
 
