@@ -35,7 +35,7 @@ namespace CinemaWebAPI.Controllers
             IEnumerable<Movie> MovieList;
             if (genreID != null)
             {
-                MovieList = await _dbMovie.GetAllAsync(u => u.GenreId == genreID, includeProperties: "Genre", pageSize: pageSize, pageNumber:pageNumber);
+                MovieList = await _dbMovie.GetAllAsync(u => u.GenreId == genreID, includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
             }
             else
             {
@@ -101,7 +101,7 @@ namespace CinemaWebAPI.Controllers
                 Year = MovieCreate.Year,
                 Image = MovieCreate.Image,
                 Description = MovieCreate.Description,
-                GenreId = MovieCreate.GenreId,
+                GenreId = MovieCreate.GenreId.Value,
 
             };
 
@@ -128,7 +128,7 @@ namespace CinemaWebAPI.Controllers
             }
 
 
-         
+
             Movie newUpdateMovie = _mapper.Map<Movie>(MovieUpdate);
 
             await _dbMovie.UpdateAsync(newUpdateMovie);

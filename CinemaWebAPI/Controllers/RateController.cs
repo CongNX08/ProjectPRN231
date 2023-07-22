@@ -1,5 +1,6 @@
 ﻿using BusinessObject.Models;
 using CinemaWebAPI.Config;
+using CinemaWebAPI.Request.Rate;
 using CinemaWebAPI.Response;
 using CinemaWebAPI.Response.Rate;
 using DataAccess.DTO;

@@ -27,7 +27,24 @@ namespace DataAccess.Repository
             await dbSet.AddAsync(entity);
             await SaveAsync();
         }
+        public async Task<T> GetOneAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[]? includes)
+        {
+            IQueryable<T> query = dbSet;
 
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            if (includes != null && includes.Length > 0)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            return await query.FirstOrDefaultAsync();
+
+        }
         public async Task<T> GetOneAsync(Expression<Func<T, bool>> filter = null, bool tracked = true, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
@@ -84,11 +101,13 @@ namespace DataAccess.Repository
                 query = query.Where(filter);
             }
 
-            foreach (var include in includes)
+            if (includes != null && includes.Length > 0)
             {
-                query = query.Include(include);
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
-
             return await query.ToListAsync();
         }
 
