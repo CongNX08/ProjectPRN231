@@ -41,6 +41,12 @@ namespace CinemaWebAPI.Controllers
                     response.ErrorMessages = "User đăng nhập không tồn tại";
                     return NotFound(response);
                 }
+                if (!person.IsActive.Value)
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMessages = "User bị khoá";
+                    return Unauthorized(response);
+                }
                 bool IsPasswordMatch = BCrypt.Net.BCrypt.Verify(request.Password, person.Password);
                 if (IsPasswordMatch)
                 {
@@ -51,7 +57,7 @@ namespace CinemaWebAPI.Controllers
                     {
                         response.IsSuccess = false;
                         response.ErrorMessages = "Cannot get token because null!";
-                        return BadRequest(response);
+                        return Unauthorized(response);
                     }
                     response.IsSuccess = true;
                     response.token = token;
@@ -62,7 +68,7 @@ namespace CinemaWebAPI.Controllers
                 {
                     response.IsSuccess = false;
                     response.ErrorMessages = "Sai mật khẩu";
-                    return BadRequest(response);
+                    return Unauthorized(response);
                 }
             }
             catch (Exception e)
@@ -109,11 +115,11 @@ namespace CinemaWebAPI.Controllers
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                new Claim("Id", Guid.NewGuid().ToString()),
+                new Claim("Id", user.PersonId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Name, user.Fullname),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti,
-                Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, GetRoleString(user.Type.Value))
              }),
                 Expires = DateTime.UtcNow.AddMinutes(60),
                 Issuer = issuer,
@@ -126,6 +132,18 @@ namespace CinemaWebAPI.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var jwtToken = tokenHandler.WriteToken(token);
             return jwtToken;
+        }
+        private string GetRoleString(int RoleId)
+        {
+            if (RoleId == Constants.UserType.ADMIN)
+            {
+                return "ADMIN";
+            }
+            if (RoleId == Constants.UserType.NORMAL_USER)
+            {
+                return "NORMAL_USER";
+            }
+            return "";
         }
     }
 }
