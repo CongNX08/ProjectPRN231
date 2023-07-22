@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using BusinessObject.Models;
+using CinemaWebAPI.Response.Movie;
 using DataAccess.DTO;
+using DataAccess.Entity;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace CinemaWebAPI.Controllers
 {
@@ -19,35 +22,86 @@ namespace CinemaWebAPI.Controllers
             _mapper = mapper;
         }
 
-        // //////////////////////////Get All data
+        //////////////////////////Get All data
+        //[HttpGet()]
+        //public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
+        //{
+
+        //    IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, x => x.Genre);
+        //    IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
+        //    return Ok(MovieDTOList);
+        //}
+
+        //Lấy danh sách phim có phân trang
         [HttpGet()]
-        public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
+        public async Task<ActionResult<MovieListResponse>> GetMovies(int PageSize = 10, int PageIndex = 1)
         {
+            try
+            {
+                MovieListResponse movieResponse = new MovieListResponse();
+                Expression<Func<Movie, object>>[] includes = { m => m.Rates, m => m.Genre };
+                IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, includes);
+                //Vì trong object movie có trường RatingPoint nên phải chạy vòng lặp để set value. Sau đó mapping value sang DTO
+                foreach (var movie in MovieList)
+                {
+                    decimal? RatingPoint = movie.Rates.Average(r => r.NumericRating);
+                    if (!RatingPoint.HasValue)
+                    {
+                        RatingPoint = 0;
+                    }
+                    movie.RatingPoint = RatingPoint;
+                }
+                IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
+                //TODO: Chỗ này nên phân trang từ repository để tránh ảnh hưởng performance
+                movieResponse.Result = MovieDTOList
+                    .OrderBy(b => b.MovieId)
+                    .Skip((PageIndex - 1) * PageSize)
+                    .Take(PageSize)
+                    .ToList();
+                Paging paging = new Paging(PageSize, MovieDTOList.Count(), PageIndex);
+                movieResponse.Paging = paging;
+                movieResponse.StatusCode = System.Net.HttpStatusCode.OK;
+                return Ok(movieResponse);
+            }
+            catch (Exception ex)
+            {
+                return Problem($"Cannot get all movies: {ex.Message}");
+            }
 
-            IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, x => x.Genre);
-            IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
-            return Ok(MovieDTOList);
+
         }
-
 
         // ////////////////////////Get One data
         [HttpGet("{Movie_id:int}", Name = "GetOneMovie")] // notedasssssssssssss
-        public async Task<ActionResult<MovieDTO>> GetOneMovie(int Movie_id)
+        public async Task<ActionResult<MovieResponse>> GetOneMovie(int Movie_id)
         {
 
-            if (Movie_id == 0)
+            try
             {
-
-                return BadRequest();
+                Expression<Func<Movie, object>>[] includes = { m => m.Rates, m => m.Genre };
+                MovieResponse response = new MovieResponse();
+                if (Movie_id == 0)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    return BadRequest(response);
+                }
+                var Movie = await _dbMovie.GetOneAsync(x => x.MovieId == Movie_id, includes);
+                if (Movie == null)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.NotFound;
+                    return NotFound(response);
+                }
+                response.IsSuccess = true;
+                response.StatusCode = System.Net.HttpStatusCode.OK;
+                response.Result = _mapper.Map<MovieDTO>(Movie);
+                return Ok(response);
             }
-            var Movie = await _dbMovie.GetOneAsync(x => x.MovieId == Movie_id, x => x.Genre);
-            if (Movie == null)
+            catch (Exception ex)
             {
-
-                return NotFound();
+                return Problem($"Cannot get movie: {ex.Message}");
             }
-
-            return Ok(_mapper.Map<MovieDTO>(Movie));
         }
 
         //////////////// Create/////////////////////
@@ -79,7 +133,7 @@ namespace CinemaWebAPI.Controllers
                 Image = MovieCreate.Image,
                 Description = MovieCreate.Description,
                 GenreId = MovieCreate.GenreId,
-            
+
             };
 
             // Thực hiện tạo mới Movie
@@ -114,7 +168,7 @@ namespace CinemaWebAPI.Controllers
 
 
         //////////////// DELETE/////////////////////////
-        [HttpDelete( Name = "DeleteMovie")]
+        [HttpDelete(Name = "DeleteMovie")]
         public async Task<ActionResult> DeleteMovie(int id)
         {
 
