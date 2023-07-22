@@ -14,7 +14,7 @@ namespace DataAccess.DTO
         public string Image { get; set; }
         public string Description { get; set; }
         public int? GenreId { get; set; }
-        public string ?Genre { get; set; }
+        public string? Genre { get; set; }
 
         public decimal? RatingPoint { get; set; }
     }

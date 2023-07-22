@@ -1,5 +1,6 @@
 ﻿using BusinessObject.Models;
 using CinemaWebAPI.Config;
+using CinemaWebAPI.Response;
 using CinemaWebAPI.Response.Rate;
 using DataAccess.DTO;
 using DataAccess.Repository;
@@ -27,6 +28,12 @@ namespace CinemaWebAPI.Controllers
                 Expression<Func<Rate, object>>[] includes = { r => r.Movie, r => r.Person };
                 List<Rate> rates = await repository.GetAllAsync(r => r.MovieId == MovieId, includes);
                 RateListResponse response = new RateListResponse();
+                if (MovieId == null)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    return BadRequest(response);
+                }
                 if (rates == null || rates.Count == 0)
                 {
                     response.StatusCode = System.Net.HttpStatusCode.NotFound;
@@ -52,5 +59,46 @@ namespace CinemaWebAPI.Controllers
                 return Problem(ex.Message);
             }
         }
+
+        [HttpPost("add")]
+        public async Task<ActionResult<CommonResponse>> GetAllRatesByMovieId(int MovieId)
+        {
+            try
+            {
+                Expression<Func<Rate, object>>[] includes = { r => r.Movie, r => r.Person };
+                List<Rate> rates = await repository.GetAllAsync(r => r.MovieId == MovieId, includes);
+                RateListResponse response = new RateListResponse();
+                if (MovieId == null)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    return BadRequest(response);
+                }
+                if (rates == null || rates.Count == 0)
+                {
+                    response.StatusCode = System.Net.HttpStatusCode.NotFound;
+                    response.IsSuccess = false;
+                    return NotFound(response);
+                }
+                var mapper = AutoMapperConfig.InitializeAutomapper<Rate, RateDTO>();
+                List<RateDTO> LstRateDto = new List<RateDTO>();
+                foreach (var rate in rates)
+                {
+                    RateDTO rateDTO = mapper.Map<RateDTO>(rate);
+                    rateDTO.PersonName = rate.Person.Fullname;
+                    rateDTO.Time = rate.Time.Value.ToString("dd/MM/yyyy HH:mm:ss");
+                    LstRateDto.Add(rateDTO);
+                }
+                response.StatusCode = System.Net.HttpStatusCode.OK;
+                response.IsSuccess = true;
+                response.Result = LstRateDto;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
     }
 }
