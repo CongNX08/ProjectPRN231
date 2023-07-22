@@ -73,6 +73,7 @@ namespace CinemaWebAPI.Controllers
                     response.StatusCode = System.Net.HttpStatusCode.BadRequest;
                     return BadRequest(response);
                 }
+                //TODO: Kiểm tra chỉ user hiện tại được phép add comment cho chính mình, không cho phép add cho người khác
                 //Kiểm tra nếu comment đã tồn tại trong film rồi thì không cho phép user đó add thêm comment nữa
                 Rate rate = await repository.GetOneAsync(r => r.MovieId == addRateRequest.MovieId && r.PersonId == addRateRequest.PersonId, null);
                 if (rate != null)
@@ -98,6 +99,40 @@ namespace CinemaWebAPI.Controllers
                 return Problem(ex.Message);
             }
         }
-
+        [HttpPut("edit")]
+        public async Task<ActionResult<CommonResponse>> EditRate([FromBody] AddRateRequest addRateRequest)
+        {
+            try
+            {
+                CommonResponse response = new CommonResponse();
+                if (!ModelState.IsValid)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    return BadRequest(response);
+                }
+                //TODO: Kiểm tra chỉ cho phép user đăng nhập hiện tại được phép edit comment của mình
+                //Lấy ra comment cần update
+                Rate rate = await repository.GetOneAsync(r => r.MovieId == addRateRequest.MovieId && r.PersonId == addRateRequest.PersonId, null);
+                if (rate == null)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.NotFound;
+                    return NotFound(response);
+                }
+                rate.Time = DateTime.Now;
+                rate.Comment = addRateRequest.Comment;
+                rate.NumericRating = addRateRequest.NumericRating;
+                response.StatusCode = System.Net.HttpStatusCode.OK;
+                response.IsSuccess = true;
+                response.Result = addRateRequest;
+                await repository.UpdateAsync(rate);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
     }
 }
