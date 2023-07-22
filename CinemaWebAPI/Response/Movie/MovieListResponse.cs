@@ -2,7 +2,8 @@
 
 namespace CinemaWebAPI.Response.Movie
 {
-    public class MovieResponse : BaseResponse<MovieDTO>
+    public class MovieListResponse : BaseResponse<List<MovieDTO>>
     {
+
     }
 }

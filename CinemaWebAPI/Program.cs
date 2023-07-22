@@ -50,8 +50,6 @@ namespace CinemaWebAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseAuthorization();
 
 
