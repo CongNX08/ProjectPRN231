@@ -5,6 +5,7 @@ using CinemaWebAPI.Response;
 using CinemaWebAPI.Response.Rate;
 using DataAccess.DTO;
 using DataAccess.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
@@ -13,6 +14,7 @@ namespace CinemaWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RateController : ControllerBase
     {
         private RateRepository repository;
@@ -22,6 +24,7 @@ namespace CinemaWebAPI.Controllers
             this.repository = repository;
         }
         [HttpGet("{MovieId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<RateDTO>>> GetAllRatesByMovieId(int MovieId)
         {
             try
@@ -80,9 +83,7 @@ namespace CinemaWebAPI.Controllers
                 {
                     response.IsSuccess = false;
                     response.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                    List<string> error = new List<string>();
-                    error.Add("User đã comment vào bộ phim này!");
-                    response.ErrorMessages = error;
+                    response.ErrorMessages = "User đã comment vào bộ phim này!";
                     return BadRequest(response);
                 }
                 var mapper = AutoMapperConfig.InitializeAutomapper<AddRateRequest, Rate>();
