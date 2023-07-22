@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -28,22 +29,54 @@ namespace DataAccess.Repository
             await SaveAsync();
         }
 
-        public async Task<T> GetOneAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[]? includes)
+        public async Task<T> GetOneAsync(Expression<Func<T, bool>> filter = null, bool tracked = true, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
-
+            if (!tracked)
+            {
+                query = query.AsNoTracking();
+            }
             if (filter != null)
             {
                 query = query.Where(filter);
             }
-            foreach (var include in includes)
+
+            if (includeProperties != null)
             {
-                query = query.Include(include);
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
             }
             return await query.FirstOrDefaultAsync();
 
         }
 
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null,
+                    int pageSize = 3, int pageNumber = 1)
+        {
+            IQueryable<T> query = dbSet;
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            if (pageSize > 0)
+            {
+                if (pageSize > 100)
+                {
+                    pageSize = 100;
+                }
+                query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+            }
+            if (includeProperties != null)
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+            return await query.ToListAsync();
+        }
         public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, params Expression<Func<T, object>>[]? includes)
         {
             IQueryable<T> query = dbSet;
@@ -52,11 +85,13 @@ namespace DataAccess.Repository
                 query = query.Where(filter);
             }
 
-            foreach (var include in includes)
+            if (includes != null && includes.Length > 0)
             {
-                query = query.Include(include);
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
-
             return await query.ToListAsync();
         }
 
@@ -71,15 +106,6 @@ namespace DataAccess.Repository
         {
             await _db.SaveChangesAsync();
         }
-
-
-
-        //public Task<T> GetOneAsync(Expression<Func<T, bool>>? filter = null, bool tracked = true)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-
 
         public async Task UpdateAsync(T entity)
         {

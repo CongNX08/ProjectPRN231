@@ -1,0 +1,79 @@
+﻿@model IEnumerable<DataAccess.DTO.MovieDTO>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Flowbite -->
+<link rel="stylesheet"
+      href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+
+
+
+
+<div class="col-span-8 p-8">
+    <div class="text-3xl font-medium border-b-2 mb-6 py-4">Movie List</div>
+    <a asp-controller="Movie" asp-action="Create" class="btn btn-outline-primary"> <i class="bi bi-plus-square-fill"> </i>Create New Villa</a>
+    <div class="container mx-auto flex ">
+
+
+        <form method="post" id="form-1"
+              class=" w-full ">
+
+            <table class="text-sm w-full text-center border-collapse border border-slate-400  mb-8">
+                <thead class="text-lg font-medium text-gray-900 bg-gray-200  ">
+                    <tr>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            Title
+                        </th>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            Description
+                        </th>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            Genre
+                        </th>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            Year
+                        </th>
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            RatingPoint
+                        </th>
+
+                        <th scope="col" class=" py-3 px-8 border border-slate-300">
+                            Image
+                        </th>
+
+                        <th scope="col" class="py-3 px-8 border border-slate-300">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        <tr class="bg-white border-b bg-gray-50 text-back-900">
+                            <td scope="row" class="py-4 px-8 border border-slate-300">@item.Title</td>
+                            <td class="py-4 px-8 border border-slate-300">@item.Description</td>
+                            <td class="py-4 px-8 border border-slate-300">@item.Genre</td>
+                            <td class="py-4 px-8 border border-slate-300">@item.Year</td>
+                            <td class="py-4 px-8 border border-slate-300">@item.RatingPoint</td>
+                            <td class="py-4 px-8 border border-slate-300">
+                                <img class="object-cover h-48 w-96 " src="@item.Image" />
+                            </td>
+
+
+                            <td class="py-4 px-6 border border-slate-300 text-blue-600 text-2xl">
+                                <a asp-asp-controller="Movie" asp-action="Edit" asp-route-id="@item.MovieId" class="btn btn-success"> <i class="bi bi-pencil-square"></i> </a>
+                                <a asp-asp-controller="Movie" asp-action="Delete" asp-route-id="@item.MovieId" class="btn btn-danger"> <i class="bi bi-trash3-fill"></i> </a>
+
+                  
+
+                            </td>
+                        </tr>
+
+                    }
+
+                </tbody>
+            </table>
+         
+        </form>
+    </div>
+</div>
