@@ -1,5 +1,132 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model DataAccess.DTO.MovieDTO
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Flowbite -->
+<link rel="stylesheet"
+      href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+<div class="container">
+    <div class="text-3xl font-medium border-b-2 mb-6 py-4">Update Movie</div>
+    <div class="container mx-auto flex ">
+        <form method="post" id="form-1"
+              class=" w-3/5 ">
+            <input type="text" asp-for="MovieId" hi />
+            <table class="p-4 w-5/6 ">
+                <tr>
+                    <td scope="row"
+                        class="pt-4 pl-6 font-medium text-gray-900 whitespace-nowrap">
+                        <label for="destination"
+                               class=" mb-2 text-lg font-medium text-gray-900 flex">
+                            Title
+                            <div class="text-red-500">(*)</div>
+                        </label>
+                    </td>
+                    <td class="pt-4 w-full">
+                        <input type="text"
+                               id="destination" asp-for="Title"
+                               class="text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                               placeholder="Enter Publisher_name" required> <span class="form-message text-red-500 "></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td scope="row"
+                        class="pt-4 pl-6 font-medium text-gray-900 whitespace-nowrap">
+                        <label for="first_name"
+                               class="block mb-2 text-lg font-medium text-gray-900 flex">
+                            Year
+                            <div class="text-red-500">(*)</div>
+                        </label>
+                    </td>
+                    <td class="pt-4 ">
+                        <input type="text" id="driver"
+                               asp-for="Year"
+                               class="text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                               placeholder="Enter City" required> <span class="form-message text-red-500 "></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row"
+                        class="pt-4 pl-6 font-medium text-gray-900 whitespace-nowrap">
+                        <label for="first_name"
+                               class="block mb-2 text-lg font-medium text-gray-900 flex">
+                            Image
+                            <div class="text-red-500">(*)</div>
+                        </label>
+                    </td>
+                    <td class="pt-4 ">
+                        <input type="text" id="cartype"
+                               asp-for="Image"
+                               class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                               placeholder="Enter State" required> <span class="form-message text-red-500 "></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row"
+                        class="pt-4 pl-6 pr-16 font-medium text-gray-900 whitespace-nowrap">
+                        <label for="first_name"
+                               class="block mb-2 text-lg font-medium text-gray-900 flex">
+                            Description
+                            <div class="text-red-500">(*)</div>
+                        </label>
+                    </td>
+                    <td class="pt-4 ">
+                        <input type="text"
+                               asp-for="Description"
+                               class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                               placeholder="Enter Country" required> <span class="form-message text-red-500 "></span>
+                    </td>
+                </tr>
+                <!-- ... existing form fields ... -->
+
+                <tr>
+                    <td scope="row" class="pt-4 pl-6 pr-16 font-medium text-gray-900 whitespace-nowrap">
+                        <label for="genreId" class="block mb-2 text-lg font-medium text-gray-900 flex">
+                            Genre
+                            <div class="text-red-500">(*)</div>
+                        </label>
+                    </td>
+                    <td class="pt-4 ">
+                        <select id="genreId" name="GenreId"
+                                class="text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                required>
+                            <option asp-for="Genre" value="">-- Select Genre --</option>
+                            @foreach (var genre in ViewBag.GenresList as SelectList)
+                            {
+                                <option value="@genre.Value">@genre.Text</option>
+                            }
+                        </select>
+                        <span class="form-message text-red-500 "></span>
+                    </td>
+                </tr>
+
+                <!-- ... remaining form fields ... -->
+
+                <tr>
+                    <td scope="row"
+                        class="pt-4 pl-6 pr-16 font-medium text-gray-900 whitespace-nowrap">
+                        <label for="first_name"
+                               class="block mb-2 text-lg font-medium text-gray-900 flex">
+                            RatingPoint
+                            <div class="text-red-500">(*)</div>
+                        </label>
+                    </td>
+                    <td class="pt-4 ">
+                        <input type="text"
+                               asp-for="RatingPoint"
+                               class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                               placeholder="Enter Country" required> <span class="form-message text-red-500 "></span>
+                    </td>
+                </tr>
+            </table>
+            <div class="flex justify-center pt-4">
+
+                <button type="submit"
+                        class="text-sm border border-gray-300 bg-green-500 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  px-4 py-3 text-center text-white">
+                    <i class="fa fa-plus pr-2" aria-hidden="true"></i>Save
+
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>

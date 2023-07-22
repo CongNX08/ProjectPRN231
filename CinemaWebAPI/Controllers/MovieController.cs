@@ -29,13 +29,13 @@ namespace CinemaWebAPI.Controllers
         //////////////////////////Get All data
 
         [HttpGet]
-        public async Task<ActionResult<MovieDTO>> GetMovies([FromQuery(Name = "filterGenre")] int? genreID,
+        public async Task<ActionResult<MovieDTO>> GetMovies([FromQuery(Name = "filterGenre")] int? genreId,
             [FromQuery] string? titleSearch, int pageSize = 0, int pageNumber = 1)
         {
             IEnumerable<Movie> MovieList;
-            if (genreID != null)
+            if (genreId != null)
             {
-                MovieList = await _dbMovie.GetAllAsync(u => u.GenreId == genreID, includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
+                MovieList = await _dbMovie.GetAllAsync(u => u.GenreId == genreId, includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
             }
             else
             {
@@ -101,7 +101,7 @@ namespace CinemaWebAPI.Controllers
                 Year = MovieCreate.Year,
                 Image = MovieCreate.Image,
                 Description = MovieCreate.Description,
-                GenreId = MovieCreate.GenreId.Value,
+                GenreId = MovieCreate.GenreId,
 
             };
 
@@ -126,9 +126,6 @@ namespace CinemaWebAPI.Controllers
             {
                 return BadRequest();
             }
-
-
-
             Movie newUpdateMovie = _mapper.Map<Movie>(MovieUpdate);
 
             await _dbMovie.UpdateAsync(newUpdateMovie);

@@ -1,5 +1,6 @@
 ﻿using DataAccess.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -11,6 +12,10 @@ namespace CinemaWeb.Controllers
         private readonly HttpClient client = null;
         private string MovieUrl = "";
         public MovieDTO Movie { get; set; }
+        private List<GenreDTO> genresList;
+        string TitleSearchRES = "";
+      
+
 
         public MovieController()
         {
@@ -19,11 +24,28 @@ namespace CinemaWeb.Controllers
             client.DefaultRequestHeaders.Accept.Add(contentType);
             MovieUrl = "https://localhost:7052/api/Movie";
         }
-        public async Task<IActionResult> List(int pageNumber = 0, int pageSize = 10)
+
+        private async Task LoadGenresList()
         {
-            
-            
-            string url = $"{MovieUrl}?pageSize={pageSize}&pageNumber={pageNumber}";
+            string genresUrl = "https://localhost:7052/api/Genre";
+            HttpResponseMessage genresResponse = await client.GetAsync(genresUrl);
+            string genresData = await genresResponse.Content.ReadAsStringAsync();
+            var genresOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            genresList = JsonSerializer.Deserialize<List<GenreDTO>>(genresData, genresOptions);
+        }
+
+
+        public async Task<IActionResult> List(string? titleSearch, int? genreId, int pageNumber = 1, int pageSize = 100)
+        {
+            await LoadGenresList(); // Call the method to load genres list
+
+
+            // Construct the API URL with titleSearch and genreId as query parameters
+            string url = $"{MovieUrl}?titleSearch={titleSearch}&filterGenre={genreId}&pageSize={pageSize}&pageNumber={pageNumber}";
+
             HttpResponseMessage response = await client.GetAsync(url);
             string strData = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
@@ -31,16 +53,27 @@ namespace CinemaWeb.Controllers
                 PropertyNameCaseInsensitive = true
             };
             List<MovieDTO> list = JsonSerializer.Deserialize<List<MovieDTO>>(strData, options);
-            ViewData["listMovie"] = list;
-            return View(list);
+            if (titleSearch != null  )
+            {
+                ViewBag.TitleSearchRES = titleSearch; // Set titleSearchRES to ViewBag
+            }
 
+   
+
+            ViewData["GenresList"] = new SelectList(genresList, "GenreId", "Description");
+            return View(list);
         }
 
 
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+
+            await LoadGenresList(); // Call the method to load genres list
+
+            // Pass the GenresList to the view
+            ViewData["GenresList"] = new SelectList(genresList, "GenreId", "Description");
             return View();
         }
         [HttpPost]
@@ -54,26 +87,30 @@ namespace CinemaWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            string url = $"{MovieUrl}/{id}";
-            Console.WriteLine(id);
+            await LoadGenresList(); // Call the method to load genres list
 
+            string url = $"{MovieUrl}/{id}";
             HttpResponseMessage response = await client.GetAsync(url);
             string strData = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(strData);
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
-            MovieDTO Movie = JsonSerializer.Deserialize<MovieDTO>(strData, options);
-            Console.WriteLine(Movie);
-            return View(Movie);
+            MovieDTO movie = JsonSerializer.Deserialize<MovieDTO>(strData, options);
 
+            // Set the selected genre ID in ViewBag
+            ViewBag.SelectedGenreId = movie.GenreId;
+
+            ViewData["GenresList"] = new SelectList(genresList, "GenreId", "Description");
+            return View(movie);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Edit(int id, MovieDTO Movie)
         {
-            string url = $"{MovieUrl}?id={id}";
+            //'https://localhost:7052/api/Movie/1045' \
+            string url = $"{MovieUrl}/{id}";
             HttpResponseMessage response = await client.PutAsJsonAsync(url, Movie);
             return Redirect("/Movie/List");
         }
@@ -91,6 +128,37 @@ namespace CinemaWeb.Controllers
             }
             return Redirect("/Movie/List");
         }
+
+        //Edit
+        [HttpGet]
+        public async Task<IActionResult> ViewDetail(int id)
+        {
+            await LoadGenresList(); // Call the method to load genres list
+
+            string url = $"{MovieUrl}/{id}";
+            HttpResponseMessage response = await client.GetAsync(url);
+            string strData = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            MovieDTO movie = JsonSerializer.Deserialize<MovieDTO>(strData, options);
+
+            // Set the selected genre ID in ViewBag
+            ViewBag.SelectedGenreId = movie.GenreId;
+
+            ViewData["GenresList"] = new SelectList(genresList, "GenreId", "Description");
+            return View(movie);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ViewDetail(int id, MovieDTO Movie)
+        {
+            //'https://localhost:7052/api/Movie/1045' \
+            string url = $"{MovieUrl}/{id}";
+            HttpResponseMessage response = await client.PutAsJsonAsync(url, Movie);
+            return Redirect("/Movie/List");
+        }
     }
 }
-
