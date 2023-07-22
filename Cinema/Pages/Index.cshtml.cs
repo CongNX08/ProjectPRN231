@@ -2,7 +2,6 @@
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 using System.Text.Json;
 
 namespace Cinema.Pages
@@ -27,9 +26,7 @@ namespace Cinema.Pages
             {
                 PropertyNameCaseInsensitive = true
             };
-            dynamic dataObj = JsonConvert.DeserializeObject(strData);
-            string data = dataObj.data.ToString();
-            Movies = System.Text.Json.JsonSerializer.Deserialize<List<MovieDTO>>(data, options);
+            Movies = JsonSerializer.Deserialize<List<MovieDTO>>(strData, options);
 
         }
     }
