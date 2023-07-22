@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using BusinessObject.Models;
-using CinemaWebAPI.Response.Movie;
 using DataAccess.DTO;
 using DataAccess.Entity;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Net;
+using System.Text.Json;
 
 namespace CinemaWebAPI.Controllers
 {
@@ -14,94 +16,61 @@ namespace CinemaWebAPI.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
+
         private readonly MovieRepository _dbMovie;
         private readonly IMapper _mapper;
         public MovieController(MovieRepository dbMovie, IMapper mapper)
         {
             _dbMovie = dbMovie;
             _mapper = mapper;
+
         }
 
         //////////////////////////Get All data
-        //[HttpGet()]
-        //public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
-        //{
 
-        //    IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, x => x.Genre);
-        //    IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
-        //    return Ok(MovieDTOList);
-        //}
-
-        //Lấy danh sách phim có phân trang
-        [HttpGet()]
-        public async Task<ActionResult<MovieListResponse>> GetMovies(int PageSize = 10, int PageIndex = 1)
+        [HttpGet]
+        public async Task<ActionResult<MovieDTO>> GetMovies([FromQuery(Name = "filterGenre")] int? genreID,
+            [FromQuery] string? titleSearch, int pageSize = 0, int pageNumber = 1)
         {
-            try
+            IEnumerable<Movie> MovieList;
+            if (genreID != null)
             {
-                MovieListResponse movieResponse = new MovieListResponse();
-                Expression<Func<Movie, object>>[] includes = { m => m.Rates, m => m.Genre };
-                IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(null, includes);
-                //Vì trong object movie có trường RatingPoint nên phải chạy vòng lặp để set value. Sau đó mapping value sang DTO
-                foreach (var movie in MovieList)
-                {
-                    decimal? RatingPoint = movie.Rates.Average(r => r.NumericRating);
-                    if (!RatingPoint.HasValue)
-                    {
-                        RatingPoint = 0;
-                    }
-                    movie.RatingPoint = RatingPoint;
-                }
-                IEnumerable<MovieDTO> MovieDTOList = _mapper.Map<IEnumerable<MovieDTO>>(MovieList);
-                //TODO: Chỗ này nên phân trang từ repository để tránh ảnh hưởng performance
-                movieResponse.Result = MovieDTOList
-                    .OrderBy(b => b.MovieId)
-                    .Skip((PageIndex - 1) * PageSize)
-                    .Take(PageSize)
-                    .ToList();
-                Paging paging = new Paging(PageSize, MovieDTOList.Count(), PageIndex);
-                movieResponse.Paging = paging;
-                movieResponse.StatusCode = System.Net.HttpStatusCode.OK;
-                return Ok(movieResponse);
+                MovieList = await _dbMovie.GetAllAsync(u => u.GenreId == genreID, includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
             }
-            catch (Exception ex)
+            else
             {
-                return Problem($"Cannot get all movies: {ex.Message}");
+                MovieList = await _dbMovie.GetAllAsync(includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
+            }
+            if (!string.IsNullOrEmpty(titleSearch))
+            {
+                string search = titleSearch.ToLower();
+                MovieList = MovieList.Where(u => u.Title.ToLower().Contains(search));
             }
 
-
+            List<MovieDTO> listDTO = _mapper.Map<List<MovieDTO>>(MovieList);
+            return Ok(listDTO);
         }
 
-        // ////////////////////////Get One data
-        [HttpGet("{Movie_id:int}", Name = "GetOneMovie")] // notedasssssssssssss
-        public async Task<ActionResult<MovieResponse>> GetOneMovie(int Movie_id)
+
+
+        ////////////////////////Get One data
+        [HttpGet("{Movie_id:int}", Name = "GetOneMovie")]
+        public async Task<ActionResult<MovieDTO>> GetOneMovie(int Movie_id)
         {
 
-            try
+            if (Movie_id == 0)
             {
-                Expression<Func<Movie, object>>[] includes = { m => m.Rates, m => m.Genre };
-                MovieResponse response = new MovieResponse();
-                if (Movie_id == 0)
-                {
-                    response.IsSuccess = false;
-                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                    return BadRequest(response);
-                }
-                var Movie = await _dbMovie.GetOneAsync(x => x.MovieId == Movie_id, includes);
-                if (Movie == null)
-                {
-                    response.IsSuccess = false;
-                    response.StatusCode = System.Net.HttpStatusCode.NotFound;
-                    return NotFound(response);
-                }
-                response.IsSuccess = true;
-                response.StatusCode = System.Net.HttpStatusCode.OK;
-                response.Result = _mapper.Map<MovieDTO>(Movie);
-                return Ok(response);
+
+                return BadRequest();
             }
-            catch (Exception ex)
+            var Movie = await _dbMovie.GetOneAsync(x => x.MovieId == Movie_id, includeProperties: "Genre");
+            if (Movie == null)
             {
-                return Problem($"Cannot get movie: {ex.Message}");
+
+                return NotFound();
             }
+            MovieDTO movieDTO = _mapper.Map<MovieDTO>(Movie);
+            return Ok(movieDTO);
         }
 
         //////////////// Create/////////////////////
@@ -132,7 +101,7 @@ namespace CinemaWebAPI.Controllers
                 Year = MovieCreate.Year,
                 Image = MovieCreate.Image,
                 Description = MovieCreate.Description,
-                GenreId = MovieCreate.GenreId,
+                GenreId = MovieCreate.GenreId.Value,
 
             };
 
@@ -150,28 +119,26 @@ namespace CinemaWebAPI.Controllers
         [HttpPut("{Movie_id:int}", Name = "UpdateMovie")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<MovieDTO>> UpdateMovie(int id, [FromBody] MovieDTO MovieUpdate)
+        public async Task<ActionResult<MovieDTO>> UpdateMovie(int Movie_id, [FromBody] MovieDTO MovieUpdate)
         {
 
-            if (MovieUpdate == null || id != MovieUpdate.MovieId)
+            if (MovieUpdate == null || Movie_id != MovieUpdate.MovieId)
             {
                 return BadRequest();
             }
 
 
-            ////////////////////// dung AutoMapper/////////
+
             Movie newUpdateMovie = _mapper.Map<Movie>(MovieUpdate);
 
             await _dbMovie.UpdateAsync(newUpdateMovie);
             return Ok();
         }
 
-
         //////////////// DELETE/////////////////////////
         [HttpDelete(Name = "DeleteMovie")]
         public async Task<ActionResult> DeleteMovie(int id)
         {
-
             if (id == 0)
             {
                 return BadRequest();

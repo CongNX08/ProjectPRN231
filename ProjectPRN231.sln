@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessObject", "BusinessObject\BusinessObject.csproj", "{E34B2A8F-19BF-4014-B1C0-F016852C7806}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessObject", "BusinessObject\BusinessObject.csproj", "{E34B2A8F-19BF-4014-B1C0-F016852C7806}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{EDD27D4A-002C-4567-BFE6-C266CCB55A4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{EDD27D4A-002C-4567-BFE6-C266CCB55A4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaWebAPI", "CinemaWebAPI\CinemaWebAPI.csproj", "{373A08DF-4DE9-4412-98FD-FE36CBC19729}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CinemaWebAPI", "CinemaWebAPI\CinemaWebAPI.csproj", "{373A08DF-4DE9-4412-98FD-FE36CBC19729}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinema", "Cinema\Cinema.csproj", "{80B97EC7-6CF4-4BDE-8632-46F929BD5535}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaWeb", "CinemaWeb\CinemaWeb.csproj", "{85F0642B-4282-4874-ACFE-E83FF1DB060D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{373A08DF-4DE9-4412-98FD-FE36CBC19729}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{373A08DF-4DE9-4412-98FD-FE36CBC19729}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{373A08DF-4DE9-4412-98FD-FE36CBC19729}.Release|Any CPU.Build.0 = Release|Any CPU
-		{80B97EC7-6CF4-4BDE-8632-46F929BD5535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{80B97EC7-6CF4-4BDE-8632-46F929BD5535}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{80B97EC7-6CF4-4BDE-8632-46F929BD5535}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{80B97EC7-6CF4-4BDE-8632-46F929BD5535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85F0642B-4282-4874-ACFE-E83FF1DB060D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85F0642B-4282-4874-ACFE-E83FF1DB060D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85F0642B-4282-4874-ACFE-E83FF1DB060D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85F0642B-4282-4874-ACFE-E83FF1DB060D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
