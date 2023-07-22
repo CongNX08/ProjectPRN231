@@ -36,9 +36,12 @@ namespace DataAccess.Repository
             {
                 query = query.Where(filter);
             }
-            foreach (var include in includes)
+            if (includes != null && includes.Length > 0)
             {
-                query = query.Include(include);
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
             return await query.FirstOrDefaultAsync();
 
@@ -52,11 +55,13 @@ namespace DataAccess.Repository
                 query = query.Where(filter);
             }
 
-            foreach (var include in includes)
+            if (includes != null && includes.Length > 0)
             {
-                query = query.Include(include);
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
-
             return await query.ToListAsync();
         }
 

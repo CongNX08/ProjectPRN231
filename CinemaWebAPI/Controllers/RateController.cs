@@ -1,5 +1,6 @@
 ﻿using BusinessObject.Models;
 using CinemaWebAPI.Config;
+using CinemaWebAPI.Request.Rate;
 using CinemaWebAPI.Response;
 using CinemaWebAPI.Response.Rate;
 using DataAccess.DTO;
@@ -61,37 +62,35 @@ namespace CinemaWebAPI.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<ActionResult<CommonResponse>> GetAllRatesByMovieId(int MovieId)
+        public async Task<ActionResult<CommonResponse>> AddRate([FromBody] AddRateRequest addRateRequest)
         {
             try
             {
-                Expression<Func<Rate, object>>[] includes = { r => r.Movie, r => r.Person };
-                List<Rate> rates = await repository.GetAllAsync(r => r.MovieId == MovieId, includes);
-                RateListResponse response = new RateListResponse();
-                if (MovieId == null)
+                CommonResponse response = new CommonResponse();
+                if (!ModelState.IsValid)
                 {
                     response.IsSuccess = false;
                     response.StatusCode = System.Net.HttpStatusCode.BadRequest;
                     return BadRequest(response);
                 }
-                if (rates == null || rates.Count == 0)
+                //Kiểm tra nếu comment đã tồn tại trong film rồi thì không cho phép user đó add thêm comment nữa
+                Rate rate = await repository.GetOneAsync(r => r.MovieId == addRateRequest.MovieId && r.PersonId == addRateRequest.PersonId, null);
+                if (rate != null)
                 {
-                    response.StatusCode = System.Net.HttpStatusCode.NotFound;
                     response.IsSuccess = false;
-                    return NotFound(response);
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    List<string> error = new List<string>();
+                    error.Add("User đã comment vào bộ phim này!");
+                    response.ErrorMessages = error;
+                    return BadRequest(response);
                 }
-                var mapper = AutoMapperConfig.InitializeAutomapper<Rate, RateDTO>();
-                List<RateDTO> LstRateDto = new List<RateDTO>();
-                foreach (var rate in rates)
-                {
-                    RateDTO rateDTO = mapper.Map<RateDTO>(rate);
-                    rateDTO.PersonName = rate.Person.Fullname;
-                    rateDTO.Time = rate.Time.Value.ToString("dd/MM/yyyy HH:mm:ss");
-                    LstRateDto.Add(rateDTO);
-                }
+                var mapper = AutoMapperConfig.InitializeAutomapper<AddRateRequest, Rate>();
+                Rate RateToAdd = mapper.Map<Rate>(addRateRequest);
+                RateToAdd.Time = DateTime.Now;
                 response.StatusCode = System.Net.HttpStatusCode.OK;
                 response.IsSuccess = true;
-                response.Result = LstRateDto;
+                response.Result = addRateRequest;
+                await repository.CreateAsync(RateToAdd);
                 return Ok(response);
             }
             catch (Exception ex)
