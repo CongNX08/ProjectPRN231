@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace CinemaWebAPI.Controllers
 {
@@ -76,7 +77,15 @@ namespace CinemaWebAPI.Controllers
                     response.StatusCode = System.Net.HttpStatusCode.BadRequest;
                     return BadRequest(response);
                 }
-                //TODO: Kiểm tra chỉ user hiện tại được phép add comment cho chính mình, không cho phép add cho người khác
+                //Kiểm tra chỉ user hiện tại được phép add comment cho chính mình, không cho phép add cho người khác
+                string CurrentUserId = User.FindFirstValue("Id");
+                if (String.IsNullOrEmpty(CurrentUserId) || Int32.Parse(CurrentUserId) != addRateRequest.PersonId)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    response.ErrorMessages = "Request không hợp lệ";
+                    return BadRequest(response);
+                }
                 //Kiểm tra nếu comment đã tồn tại trong film rồi thì không cho phép user đó add thêm comment nữa
                 Rate rate = await repository.GetOneAsync(r => r.MovieId == addRateRequest.MovieId && r.PersonId == addRateRequest.PersonId, null);
                 if (rate != null)
@@ -112,7 +121,15 @@ namespace CinemaWebAPI.Controllers
                     response.StatusCode = System.Net.HttpStatusCode.BadRequest;
                     return BadRequest(response);
                 }
-                //TODO: Kiểm tra chỉ cho phép user đăng nhập hiện tại được phép edit comment của mình
+                //Kiểm tra chỉ cho phép user đăng nhập hiện tại được phép edit comment của mình
+                string CurrentUserId = User.FindFirstValue("Id");
+                if (String.IsNullOrEmpty(CurrentUserId) || !CurrentUserId.Equals(addRateRequest.PersonId))
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    response.ErrorMessages = "Request không hợp lệ";
+                    return BadRequest(response);
+                }
                 //Lấy ra comment cần update
                 Rate rate = await repository.GetOneAsync(r => r.MovieId == addRateRequest.MovieId && r.PersonId == addRateRequest.PersonId, null);
                 if (rate == null)
