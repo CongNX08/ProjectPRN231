@@ -10,8 +10,13 @@ namespace CinemaWebAPI.Config
         {
             CreateMap<Movie, MovieDTO>()
            .ForMember(dest => dest.Genre, opt => opt.MapFrom(src => src.Genre.Description))
-           .ForMember(dest => dest.GenreId, opt => opt.MapFrom(src => src.GenreId))
            .ReverseMap();
+
+            CreateMap<MovieDTO, Movie>()
+               .ForMember(dest => dest.Genre, opt => opt.Ignore()) // Ignore Genre mapping
+               .ForMember(dest => dest.Rates, opt => opt.Ignore()); // Ignore Rates mapping
+
+            CreateMap<Genre, GenreDTO>().ReverseMap();
 
         }
     }

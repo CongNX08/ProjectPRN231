@@ -1,9 +1,5 @@
 ﻿@model DataAccess.DTO.MovieDTO
-<script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Flowbite -->
-<link rel="stylesheet"
-      href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
 <div class="container">
     <div class="text-3xl font-medium border-b-2 mb-6 py-4">Create Movie</div>
     <div class="container mx-auto flex ">
@@ -75,22 +71,31 @@
                                placeholder="Enter Country" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
+                <!-- ... existing form fields ... -->
+
                 <tr>
-                    <td scope="row"
-                        class="pt-4 pl-6 pr-16 font-medium text-gray-900 whitespace-nowrap">
-                        <label for="first_name"
-                               class="block mb-2 text-lg font-medium text-gray-900 flex">
+                    <td scope="row" class="pt-4 pl-6 pr-16 font-medium text-gray-900 whitespace-nowrap">
+                        <label for="genreId" class="block mb-2 text-lg font-medium text-gray-900 flex">
                             Genre
                             <div class="text-red-500">(*)</div>
                         </label>
                     </td>
                     <td class="pt-4 ">
-                        <input type="text"
-                               asp-for="Genre"
-                               class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter Country" required> <span class="form-message text-red-500 "></span>
+                        <select id="genreId" name="GenreId"
+                                class="text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                required>
+                            <option value="">-- Select Genre --</option>
+                            @foreach (var genre in ViewBag.GenresList as SelectList)
+                            {
+                                <option value="@genre.Value">@genre.Text</option>
+                            }
+                        </select>
+                        <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
+
+                <!-- ... remaining form fields ... -->
+
                 <tr>
                     <td scope="row"
                         class="pt-4 pl-6 pr-16 font-medium text-gray-900 whitespace-nowrap">
