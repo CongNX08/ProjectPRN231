@@ -129,36 +129,6 @@ namespace CinemaWeb.Controllers
             return Redirect("/Movie/List");
         }
 
-        //Edit
-        [HttpGet]
-        public async Task<IActionResult> ViewDetail(int id)
-        {
-            await LoadGenresList(); // Call the method to load genres list
-
-            string url = $"{MovieUrl}/{id}";
-            HttpResponseMessage response = await client.GetAsync(url);
-            string strData = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            MovieDTO movie = JsonSerializer.Deserialize<MovieDTO>(strData, options);
-
-            // Set the selected genre ID in ViewBag
-            ViewBag.SelectedGenreId = movie.GenreId;
-
-            ViewData["GenresList"] = new SelectList(genresList, "GenreId", "Description");
-            return View(movie);
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> ViewDetail(int id, MovieDTO Movie)
-        {
-            //'https://localhost:7052/api/Movie/1045' \
-            string url = $"{MovieUrl}/{id}";
-            HttpResponseMessage response = await client.PutAsJsonAsync(url, Movie);
-            return Redirect("/Movie/List");
-        }
+       
     }
 }
