@@ -154,6 +154,7 @@ namespace CinemaWebAPI.Controllers
         }
 
         [HttpDelete("delete")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<CommonResponse>> DeleteRate([FromBody] DeleteRateRequest deleteRateRequest)
         {
             try
