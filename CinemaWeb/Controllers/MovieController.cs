@@ -57,9 +57,6 @@ namespace CinemaWeb.Controllers
             {
                 ViewBag.TitleSearchRES = titleSearch; // Set titleSearchRES to ViewBag
             }
-
-   
-
             ViewData["GenresList"] = new SelectList(genresList, "GenreId", "Description");
             return View(list);
         }

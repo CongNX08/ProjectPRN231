@@ -1,6 +1,7 @@
 ﻿using DataAccess.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -26,8 +27,19 @@ namespace CinemaWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Manage(int MovieId)
         {
-        //https://localhost:7052/api/Rate/14
+            string MovieUrl = "https://localhost:7052/api/Movie";
+            string urlMovie = $"{MovieUrl}/{MovieId}";
+            HttpResponseMessage response1 = await client.GetAsync(urlMovie);
+            string strData1 = await response1.Content.ReadAsStringAsync();
+            var options1 = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            MovieDTO movie = System.Text.Json.JsonSerializer.Deserialize<MovieDTO>(strData1, options1);
+            ViewBag.Movie = movie;
 
+            // https://localhost:7052/api/Rate/14
+            List<RateDTO> rate;
             string url = $"{RateUrl}/{MovieId}";
             HttpResponseMessage response = await client.GetAsync(url);
             string strData = await response.Content.ReadAsStringAsync();
@@ -35,7 +47,9 @@ namespace CinemaWeb.Controllers
             {
                 PropertyNameCaseInsensitive = true
             };
-            RateDTO rate = JsonSerializer.Deserialize<RateDTO>(strData, options);
+            dynamic dataObj = JsonConvert.DeserializeObject(strData);
+            string data = dataObj.result.ToString();
+            rate = System.Text.Json.JsonSerializer.Deserialize<List<RateDTO>>(data, options);
             return View(rate);
         }
 
@@ -52,9 +66,9 @@ namespace CinemaWeb.Controllers
         //Delete
         [HttpGet]
         //'https://localhost:7052/api/Movie?id=26' \
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int movieID, int personID )
         {
-            string url = $"{RateUrl}?id={id}";
+            string url = $"{RateUrl}?id={movieID}";
             HttpResponseMessage response = await client.DeleteAsync(url);
             if (!response.IsSuccessStatusCode)
             {
