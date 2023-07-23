@@ -121,7 +121,7 @@ namespace CinemaWebAPI.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Role, GetRoleString(user.Type.Value))
              }),
-                Expires = DateTime.UtcNow.AddMinutes(60),
+                Expires = DateTime.UtcNow.AddMinutes(5),
                 Issuer = issuer,
                 Audience = audience,
                 SigningCredentials = new SigningCredentials
