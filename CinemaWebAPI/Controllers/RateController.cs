@@ -123,7 +123,7 @@ namespace CinemaWebAPI.Controllers
                 }
                 //Kiểm tra chỉ cho phép user đăng nhập hiện tại được phép edit comment của mình
                 string CurrentUserId = User.FindFirstValue("Id");
-                if (String.IsNullOrEmpty(CurrentUserId) || !CurrentUserId.Equals(addRateRequest.PersonId))
+                if (String.IsNullOrEmpty(CurrentUserId) || Int32.Parse(CurrentUserId) != addRateRequest.PersonId)
                 {
                     response.IsSuccess = false;
                     response.StatusCode = System.Net.HttpStatusCode.BadRequest;
@@ -145,6 +145,48 @@ namespace CinemaWebAPI.Controllers
                 response.IsSuccess = true;
                 response.Result = addRateRequest;
                 await repository.UpdateAsync(rate);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpDelete("delete")]
+        public async Task<ActionResult<CommonResponse>> DeleteRate([FromBody] DeleteRateRequest deleteRateRequest)
+        {
+            try
+            {
+                CommonResponse response = new CommonResponse();
+                if (!ModelState.IsValid)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    return BadRequest(response);
+                }
+                //Kiểm tra chỉ cho phép user đăng nhập hiện tại được phép xoá comment của mình
+                string CurrentUserId = User.FindFirstValue("Id");
+                if (String.IsNullOrEmpty(CurrentUserId) || Int32.Parse(CurrentUserId) != deleteRateRequest.PersonId)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    response.ErrorMessages = "Request không hợp lệ";
+                    return BadRequest(response);
+                }
+                //Lấy ra comment cần xoá
+                Rate rate = await repository.GetOneAsync(r => r.MovieId == deleteRateRequest.MovieId && r.PersonId == deleteRateRequest.PersonId, null);
+                if (rate == null)
+                {
+                    response.IsSuccess = false;
+                    response.StatusCode = System.Net.HttpStatusCode.NotFound;
+                    return NotFound(response);
+                }
+                await repository.RemoveAsync(rate);
+                response.StatusCode = System.Net.HttpStatusCode.OK;
+                response.IsSuccess = true;
+                response.Result = deleteRateRequest;
+
                 return Ok(response);
             }
             catch (Exception ex)
