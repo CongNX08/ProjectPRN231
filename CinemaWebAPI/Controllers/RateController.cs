@@ -154,7 +154,6 @@ namespace CinemaWebAPI.Controllers
         }
 
         [HttpDelete("delete")]
-        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<CommonResponse>> DeleteRate([FromBody] DeleteRateRequest deleteRateRequest)
         {
             try
@@ -168,7 +167,9 @@ namespace CinemaWebAPI.Controllers
                 }
                 //Kiểm tra chỉ cho phép user đăng nhập hiện tại được phép xoá comment của mình
                 string CurrentUserId = User.FindFirstValue("Id");
-                if (String.IsNullOrEmpty(CurrentUserId) || Int32.Parse(CurrentUserId) != deleteRateRequest.PersonId)
+                string UserType = User.FindFirstValue("type");
+                if ((String.IsNullOrEmpty(CurrentUserId) || Int32.Parse(CurrentUserId) != deleteRateRequest.PersonId)
+                    && Int32.Parse(UserType) == Constants.UserType.NORMAL_USER)
                 {
                     response.IsSuccess = false;
                     response.StatusCode = System.Net.HttpStatusCode.BadRequest;

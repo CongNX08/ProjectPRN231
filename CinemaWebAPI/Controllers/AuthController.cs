@@ -119,7 +119,8 @@ namespace CinemaWebAPI.Controllers
                 new Claim(JwtRegisteredClaimNames.Name, user.Fullname),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, GetRoleString(user.Type.Value))
+                new Claim(ClaimTypes.Role, GetRoleString(user.Type.Value)),
+                new Claim("type", user.Type.Value.ToString())
              }),
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 Issuer = issuer,
