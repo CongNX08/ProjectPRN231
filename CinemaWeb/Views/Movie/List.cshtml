@@ -1,8 +1,11 @@
 ﻿@model IEnumerable<DataAccess.DTO.MovieDTO>
+@{
+    int TotalPage = int.Parse(ViewData["TotalPage"].ToString());
+    int pageNumber = int.Parse(ViewData["pageNumber"].ToString());
+}
 
 
-
-<div class="relative overflow-x-auto shadow-md sm:rounded-lg pt-4  border border-gray-200">
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg pt-4 border border-gray-200 mb-20">
     <form method="get" class="pt-2  ">
         <div class="flex w-2/3 items-center justify-end ">
             <div class="flex w-1/2 ">
@@ -17,22 +20,22 @@
                     <span class="sr-only">Search</span>
                 </div>
                 <input type="search" id="search-dropdown" name="titleSearch" value="@ViewBag.TitleSearchRES"
-                       class="p-1.5 w-full text-sm text-gray-900  border border-gray-300 focus:ring-blue-300 focus:border-blue-300 "
+                       class="p-1.5 w-full text-sm text-gray-900 border border-gray-300 focus:ring-blue-300 focus:border-blue-300 rounded-md "
                        placeholder="Title Search">
 
-                <button type="submit" class="rounded-md p-1.5 mx-2 text-sm font-medium text-white focus:outline-none bg-blue-400  border border-gray-200 b hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200">
+                <button type="submit" class="rounded-md p-1.5 mr-4 text-sm font-medium text-white focus:outline-none bg-blue-400  border border-gray-200 b hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200">
                     Search
                 </button>
             </div>
-            <div class="flex">
+            <div class="flex mt-1">
                 <div>
                     <select id="genreId" name="GenreId"
-                            class="rounded-md p-1.5 mx-2 text-sm font-medium  focus:outline-none  border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-200">
+                            class="rounded-md p-1.5 text-sm font-medium focus:outline-none  border border-gray-200 focus:z-10 focus:ring-1 focus:ring-gray-200">
                         required>
                         <option value="">Filter By Genre</option>
                         @foreach (var genre in ViewBag.GenresList as SelectList)
                         {
-                            <option value="@genre.Value">@genre.Text</option>
+                            <option value="@genre.Value" selected="@(Int32.Parse(genre.Value) == ViewBag.genreId)">@genre.Text</option>
                         }
                     </select>
                 </div>
@@ -45,10 +48,9 @@
                             <span class="sr-only">Filter</span>
                         </div>
                     </button>
-                    
                 </div>
-                
-               
+
+
             </div>
         </div>
     </form>
@@ -58,8 +60,8 @@
 
 
     <div class="col-span-8 px-8">
-        <div class="text-3xl font-medium border-b-2 mb-6 ">Movie List</div>
-        <a asp-controller="Movie" asp-action="Create" class="btn btn-outline-primary"> <i class="bi bi-plus-square-fill"> </i>Create New Villa</a>
+        <div class="text-3xl font-medium border-b-2 ">Movie List</div>
+        <a asp-controller="Movie" asp-action="Create" class="btn btn-outline-primary my-4 bg-cyan-400 text-blue-800 "> <i class="bi bi-plus-square-fill"> </i>Create Movie</a>
         <div class="container mx-auto flex ">
 
 
@@ -108,7 +110,7 @@
                                 <td class="py-4 px-8 border border-slate-300">@item.Year</td>
                                 <td class="py-4 px-8 border border-slate-300">@item.RatingPoint</td>
                                 <td class="py-4 px-8 border border-slate-300">
-                                    <img class="object-cover h-36 w-72 " src="@item.Image" />
+                                    <img class="object-cover h-36 w-72" src="@item.Image" alt="">
                                 </td>
                                 <td class="py-4 px-8 border border-slate-300">
                                     <a asp-controller="Rate" asp-action="Manage" asp-route-MovieId="@item.MovieId" class="btn btn-success mb-2 ">
@@ -126,9 +128,69 @@
 
                     </tbody>
                 </table>
+                <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+                    <div class="flex flex-1 justify-between sm:hidden">
+                        <a asp-controller="Movie" asp-action="List" asp-route-titleSearch="@ViewBag.TitleSearchRES" asp-route-genreId="@ViewBag.genreId" asp-route-pageSize="@ViewData["pageSize"]" asp-route-pageNumber="@(pageNumber+1)" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
 
+                        <a asp-controller="Movie" asp-action="List" asp-route-titleSearch="@ViewBag.TitleSearchRES" asp-route-genreId="@ViewBag.genreId" asp-route-pageSize="@ViewData["pageSize"]" asp-route-pageNumber="@(pageNumber-1)" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+
+                    </div>
+                    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Showing
+                                <span class="font-medium">@pageNumber</span>
+                                /
+                                <span class="font-medium">@ViewBag.ToTalPage</span>
+
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="isolate inline-flex -space-x-px shadow-sm" aria-label="Pagination">
+                                @if (pageNumber == 1)
+                                {
+                                    <span class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0">
+                                        <span class="sr-only">Previous</span>
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+
+                                }
+                                else
+                                {
+                                    <a asp-controller="Movie" asp-action="List" asp-route-titleSearch="@ViewBag.TitleSearchRES" asp-route-genreId="@ViewBag.genreId" asp-route-pageSize="@ViewData["pageSize"]" asp-route-pageNumber="@(pageNumber-1)" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                        <span class="sr-only">Previous</span>
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                                        </svg>
+                                    </a> 
+                                }
+                                @if (pageNumber == TotalPage)
+                                {
+                                    <span class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0">
+                                        <span class="sr-only">Next</span>
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Movie" asp-action="List" asp-route-titleSearch="@ViewBag.TitleSearchRES" asp-route-genreId="@ViewBag.genreId" asp-route-pageSize="@ViewData["pageSize"]" asp-route-pageNumber="@(pageNumber+1)" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                        <span class="sr-only">Next</span>
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                        </svg>
+                                    </a>
+                                }
+                            </nav>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 </div>
+
 

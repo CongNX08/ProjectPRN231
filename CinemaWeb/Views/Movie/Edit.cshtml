@@ -1,11 +1,12 @@
 ﻿@model DataAccess.DTO.MovieDTO
 
+
 <div class="container">
     <div class="text-3xl font-medium border-b-2 mb-6 py-4">Update Movie</div>
     <div class="container mx-auto flex ">
         <form method="post" id="form-1"
               class=" w-3/5 ">
-            <input type="text" asp-for="MovieId" hi />
+            <input type="text" asp-for="MovieId" hidden />
             <table class="p-4 w-5/6 ">
                 <tr>
                     <td scope="row"
@@ -20,7 +21,7 @@
                         <input type="text"
                                id="destination" asp-for="Title"
                                class="text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter Publisher_name" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter Title" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
 
@@ -34,10 +35,10 @@
                         </label>
                     </td>
                     <td class="pt-4 ">
-                        <input type="text" id="driver"
+                        <input type="number" id="driver"
                                asp-for="Year"
                                class="text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter City" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter Year" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
                 <tr>
@@ -53,7 +54,7 @@
                         <input type="text" id="cartype"
                                asp-for="Image"
                                class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter State" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter Image" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
                 <tr>
@@ -69,7 +70,7 @@
                         <input type="text"
                                asp-for="Description"
                                class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter Country" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter Description" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
                 <!-- ... existing form fields ... -->
@@ -88,7 +89,7 @@
                             <option asp-for="Genre" value="">-- Select Genre --</option>
                             @foreach (var genre in ViewBag.GenresList as SelectList)
                             {
-                                <option value="@genre.Value">@genre.Text</option>
+                                <option value="@genre.Value" selected="@(Int32.Parse(genre.Value) == ViewBag.SelectedGenreId)">@genre.Text</option>
                             }
                         </select>
                         <span class="form-message text-red-500 "></span>
@@ -107,10 +108,10 @@
                         </label>
                     </td>
                     <td class="pt-4 ">
-                        <input type="text"
+                        <input type="number"
                                asp-for="RatingPoint"
                                class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter Country" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter RatingPoint" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
             </table>
