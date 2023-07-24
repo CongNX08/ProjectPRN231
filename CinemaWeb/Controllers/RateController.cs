@@ -91,5 +91,45 @@ namespace CinemaWeb.Controllers
             }
             return Redirect("/Movie/List");
         }
+
+        //Manage
+        [HttpGet]
+        public async Task<IActionResult> Comment(int MovieId)
+        {
+            string MovieUrl = "https://localhost:7052/api/Movie";
+            string urlMovie = $"{MovieUrl}/{MovieId}";
+            HttpResponseMessage response1 = await client.GetAsync(urlMovie);
+            string strData1 = await response1.Content.ReadAsStringAsync();
+            var options1 = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            MovieDTO movie = System.Text.Json.JsonSerializer.Deserialize<MovieDTO>(strData1, options1);
+            ViewBag.Movie = movie;
+
+            // https://localhost:7052/api/Rate/14
+            List<RateDTO> rate;
+            string url = $"{RateUrl}/{MovieId}";
+            HttpResponseMessage response = await client.GetAsync(url);
+            string strData = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            dynamic dataObj = JsonConvert.DeserializeObject(strData);
+            string data = dataObj.result.ToString();
+            rate = System.Text.Json.JsonSerializer.Deserialize<List<RateDTO>>(data, options);
+            return View(rate);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Comment(int movieID, int personID, string comment)
+        {
+
+            
+            return Redirect("/Movie/List");
+        }
+
     }
 }
