@@ -89,6 +89,13 @@ namespace CinemaWebAPI.Controllers
                     response.ErrorMessages = "Input không hợp lệ";
                     return BadRequest(response);
                 }
+                Person p = await repository.GetOneAsync(p => p.Email.Equals(request.Email));
+                if (p != null)
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMessages = "Tài khoản đã có người đăng kí";
+                    return BadRequest(response);
+                }
                 var mapper = AutoMapperConfig.InitializeAutomapper<UserRegisterRequest, Person>();
                 Person person = mapper.Map<Person>(request);
                 person.IsActive = true;
@@ -119,7 +126,8 @@ namespace CinemaWebAPI.Controllers
                 new Claim(JwtRegisteredClaimNames.Name, user.Fullname),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, GetRoleString(user.Type.Value))
+                new Claim(ClaimTypes.Role, GetRoleString(user.Type.Value)),
+                new Claim("type", user.Type.Value.ToString())
              }),
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 Issuer = issuer,

@@ -1,0 +1,38 @@
+﻿@page
+@using CinemaWebAPI.Request.Auth;
+@model CinemaWeb.Views.Login.IndexModel
+@{
+}
+<section>
+    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <div class="w-full bg-white rounded-lg shadow  md:mt-0 sm:max-w-md xl:p-0">
+            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                    Đăng nhập tài khoản
+                </h1>
+                <form class="space-y-4 md:space-y-6" asp-action="Login" method="post">
+                    <div>
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
+                        <input type="email" name="Email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="abc@abc.com" required="true">
+                    </div>
+                    <div>
+                        <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Mật khẩu</label>
+                        <input type="password" name="Password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required="true">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        @{
+                            if (ViewBag.Message != null)
+                            {
+                                <label style="color:red">@ViewBag.Message</label>
+                            }
+                        }
+                    </div>
+                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Đăng nhập</button>
+                    <p class="text-sm font-light text-gray-500">
+                        Chưa có tài khoản? <a href="/Resgister" class="font-medium text-primary-600 hover:underline">Đăng kí tài khoản</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

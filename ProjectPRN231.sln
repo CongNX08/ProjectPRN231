@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CinemaWebAPI", "CinemaWebAPI\CinemaWebAPI.csproj", "{373A08DF-4DE9-4412-98FD-FE36CBC19729}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaWeb", "CinemaWeb\CinemaWeb.csproj", "{85F0642B-4282-4874-ACFE-E83FF1DB060D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CinemaWeb", "CinemaWeb\CinemaWeb.csproj", "{85F0642B-4282-4874-ACFE-E83FF1DB060D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
