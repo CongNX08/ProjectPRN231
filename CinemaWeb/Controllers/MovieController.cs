@@ -38,7 +38,7 @@ namespace CinemaWeb.Controllers
         }
 
 
-        public async Task<IActionResult> List(string? titleSearch, int? genreId, int pageNumber = 1, int pageSize = 100)
+        public async Task<IActionResult> List(string? titleSearch, int? genreId, int pageNumber = 1, int pageSize = 3)
         {
             await LoadGenresList(); // Call the method to load genres list
 
