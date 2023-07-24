@@ -92,7 +92,7 @@ namespace CinemaWeb.Controllers
             {
                 ViewData["Err"] = "Delete Fail!!!!";
             }
-            return Redirect("/Movie/List");
+            return Redirect($"/Rate/Manage?MovieId={movieID}");
         }
 
         //Manage
