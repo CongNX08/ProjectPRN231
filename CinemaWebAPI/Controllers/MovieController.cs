@@ -30,26 +30,39 @@ namespace CinemaWebAPI.Controllers
 
         [HttpGet]
         public async Task<ActionResult<MovieDTO>> GetMovies([FromQuery(Name = "filterGenre")] int? genreId,
-            [FromQuery] string? titleSearch, int pageSize = 0, int pageNumber = 1)
+            [FromQuery] string? titleSearch, [FromQuery] int? year, int pageSize = 0, int pageNumber = 1)
         {
-            IEnumerable<Movie> MovieList;
-            if (genreId != null)
-            {
-                MovieList = await _dbMovie.GetAllAsync(u => u.GenreId == genreId, includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
-            }
-            else
-            {
-                MovieList = await _dbMovie.GetAllAsync(includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
-            }
-            if (!string.IsNullOrEmpty(titleSearch))
+            IEnumerable<Movie> MovieList = await _dbMovie.GetAllAsync(includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
+            IEnumerable<Movie> MovieTotal = await _dbMovie.GetAllAsync(includeProperties: "Genre");
+
+            if(genreId != null && !string.IsNullOrEmpty(titleSearch))
             {
                 string search = titleSearch.ToLower();
-                MovieList = MovieList.Where(u => u.Title.ToLower().Contains(search));
+                MovieList = await _dbMovie.GetAllAsync(u => u.GenreId == genreId && u.Title.ToLower().Contains(search), includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
+                MovieTotal = await _dbMovie.GetAllAsync(u => u.GenreId == genreId && u.Title.ToLower().Contains(search), includeProperties: "Genre");
+            }
+            else if(genreId != null)
+            {
+                MovieList = await _dbMovie.GetAllAsync(u => u.GenreId == genreId, includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
+                MovieTotal = await _dbMovie.GetAllAsync(u => u.GenreId == genreId, includeProperties: "Genre");
+
+            }
+            else if (!string.IsNullOrEmpty(titleSearch))
+            {
+                string search = titleSearch.ToLower();
+                MovieList = await _dbMovie.GetAllAsync(u => u.Title.ToLower().Contains(search), includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
+                MovieTotal = await _dbMovie.GetAllAsync(u => u.Title.ToLower().Contains(search), includeProperties: "Genre");
+
             }
 
             List<MovieDTO> listDTO = _mapper.Map<List<MovieDTO>>(MovieList);
+            List<MovieDTO> listDTO2 = _mapper.Map<List<MovieDTO>>(MovieTotal);
+
+            listDTO.ForEach(dto => dto.CountNumberofResult =  listDTO2.Count);
+
             return Ok(listDTO);
         }
+
 
 
 
@@ -102,7 +115,7 @@ namespace CinemaWebAPI.Controllers
                 Image = MovieCreate.Image,
                 Description = MovieCreate.Description,
                 GenreId = MovieCreate.GenreId,
-
+                RatingPoint = MovieCreate.RatingPoint,
             };
 
             // Thực hiện tạo mới Movie

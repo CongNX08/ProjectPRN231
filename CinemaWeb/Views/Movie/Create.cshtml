@@ -19,7 +19,7 @@
                         <input type="text"
                                id="destination" asp-for="Title"
                                class="text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter Publisher_name" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter Title " required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
 
@@ -33,10 +33,10 @@
                         </label>
                     </td>
                     <td class="pt-4 ">
-                        <input type="text" id="driver"
+                        <input type="number" id="driver"
                                asp-for="Year"
                                class="text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter City" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter Year" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
                 <tr>
@@ -52,7 +52,7 @@
                         <input type="text" id="cartype"
                                asp-for="Image"
                                class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter State" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter Image" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
                 <tr>
@@ -68,7 +68,7 @@
                         <input type="text"
                                asp-for="Description"
                                class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter Country" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter Description" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
                 <!-- ... existing form fields ... -->
@@ -106,10 +106,10 @@
                         </label>
                     </td>
                     <td class="pt-4 ">
-                        <input type="text"
+                        <input type="number"
                                asp-for="RatingPoint"
                                class=" text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                               placeholder="Enter Country" required> <span class="form-message text-red-500 "></span>
+                               placeholder="Enter RatingPoint" required> <span class="form-message text-red-500 "></span>
                     </td>
                 </tr>
             </table>
@@ -117,7 +117,7 @@
 
                 <button type="submit"
                         class="text-sm border border-gray-300 bg-green-500 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  px-4 py-3 text-center text-white">
-                    <i class="fa fa-plus pr-2" aria-hidden="true"></i>Create Publisher
+                    <i class="fa fa-plus pr-2" aria-hidden="true"></i>Create Movie
 
                 </button>
             </div>

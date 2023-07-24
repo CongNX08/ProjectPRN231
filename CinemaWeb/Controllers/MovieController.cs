@@ -14,7 +14,7 @@ namespace CinemaWeb.Controllers
         public MovieDTO Movie { get; set; }
         private List<GenreDTO> genresList;
         string TitleSearchRES = "";
-      
+
 
 
         public MovieController()
@@ -52,11 +52,28 @@ namespace CinemaWeb.Controllers
             {
                 PropertyNameCaseInsensitive = true
             };
+
             List<MovieDTO> list = JsonSerializer.Deserialize<List<MovieDTO>>(strData, options);
-            if (titleSearch != null  )
+            if (titleSearch != null)
             {
                 ViewBag.TitleSearchRES = titleSearch; // Set titleSearchRES to ViewBag
             }
+            if (genreId != null)
+            {
+                ViewBag.genreId = genreId; // Set genreId to ViewBag
+            }
+
+            if (list != null && list.Count > 0)
+            {
+                ViewBag.ToTalPage = (int)Math.Ceiling((double)list[0].CountNumberofResult / pageSize);
+            }
+            else
+            {
+                
+                ViewBag.TotalPage = 1;
+            }
+            ViewData["pageNumber"] = pageNumber;
+            ViewData["pageSize"] = pageSize;
             ViewData["GenresList"] = new SelectList(genresList, "GenreId", "Description");
             return View(list);
         }
@@ -126,6 +143,6 @@ namespace CinemaWeb.Controllers
             return Redirect("/Movie/List");
         }
 
-       
+
     }
 }

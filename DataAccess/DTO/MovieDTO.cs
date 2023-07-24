@@ -8,6 +8,7 @@ namespace DataAccess.DTO
 {
     public class MovieDTO
     {
+        public int CountNumberofResult { get; set; }
         public int MovieId { get; set; }
         public string Title { get; set; }
         public int? Year { get; set; }
@@ -15,7 +16,6 @@ namespace DataAccess.DTO
         public string Description { get; set; }
         public int GenreId { get; set; }
         public string? Genre { get; set; }
-
         public decimal? RatingPoint { get; set; }
     }
 }
