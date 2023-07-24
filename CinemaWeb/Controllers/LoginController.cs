@@ -46,7 +46,7 @@ namespace CinemaWeb.Controllers
                         HttpContext.Session.SetString("FullName", userDTO.Fullname);
                         HttpContext.Session.SetString("UserType", userDTO.Type.ToString());
                         HttpContext.Session.SetString("Token", (string)json.token);
-                        return Redirect("/");
+                        return RedirectToAction("Index", "Home");
                     }
                     else
                     {
@@ -61,6 +61,16 @@ namespace CinemaWeb.Controllers
                 }
             }
             ViewBag.Message = "Dữ liệu không hợp lệ";
+            return View("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            if (HttpContext.Session.IsAvailable)
+            {
+                HttpContext.Session.Clear();
+            }
             return View("Index");
         }
     }

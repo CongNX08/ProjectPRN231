@@ -8,7 +8,6 @@ namespace CinemaWeb
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddRazorPages();
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -27,11 +26,9 @@ namespace CinemaWeb
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
             app.UseAuthorization();
-            app.MapRazorPages();
             app.UseSession();
             app.MapControllerRoute(
                 name: "default",
