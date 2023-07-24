@@ -3,6 +3,8 @@ using DataAccess.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -71,6 +73,7 @@ namespace CinemaWeb.Controllers
         public async Task<IActionResult> Delete(int movieID, int personID)
         {
             string url = $"{RateUrl}/delete";
+            string token = HttpContext.Session.GetString("Token");
             //Build request body
             DeleteRateRequest requestData = new DeleteRateRequest();
             requestData.MovieId = movieID;
@@ -83,7 +86,7 @@ namespace CinemaWeb.Controllers
                 Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json")
             };
             //Thêm header Authorization để xác thực user
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjEiLCJuYW1lIjoiSm9obiBEb2UiLCJlbWFpbCI6ImpvaG5kb2VAZXhhbXBsZS5jb20iLCJqdGkiOiIwZTg1Y2I4Yy00YmZlLTRlY2QtODFhZi0wZDU2ODc4MjZjNWIiLCJyb2xlIjoiQURNSU4iLCJuYmYiOjE2OTAwNTY3NTYsImV4cCI6MTY5MDA2MDM1NiwiaWF0IjoxNjkwMDU2NzU2LCJpc3MiOiJodHRwOmxvY2FsaG9zdC8iLCJhdWQiOiJodHRwOmxvY2FsaG9zdC8ifQ.2dAMe72QnNlKPqgKhJINnmQDZOPsmywEUgoEDgNvqPoOzEcpzAp7MxY8w4D7oBP5J40zKgIwBErbOzOfGwcTyg");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await client.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
@@ -126,9 +129,34 @@ namespace CinemaWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Comment(int movieID, int personID, string comment)
         {
+            try
+            {
+                AddRateRequest addRateRequest = new AddRateRequest();
+                addRateRequest.Comment = comment;
+                addRateRequest.MovieId = movieID;
+                addRateRequest.PersonId = personID;
+                string token = HttpContext.Session.GetString("Token");
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"{RateUrl}/add"),
+                    Content = new StringContent(JsonConvert.SerializeObject(addRateRequest), Encoding.UTF8, "application/json")
+                };
+                //Thêm header Authorization để xác thực user
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var resp = client.Send(request);
+                dynamic json = JObject.Parse(resp.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+                if (resp.IsSuccessStatusCode)
+                {
+                    return Redirect($"/Rate/Comment?MovieId={movieID}");
+                }
+                return Redirect($"/Rate/Comment?MovieId={movieID}");
+            }
+            catch (Exception ex)
+            {
 
-            
-            return Redirect("/Movie/List");
+            }
+            return Redirect($"/Rate/Comment?MovieId={movieID}");
         }
 
     }

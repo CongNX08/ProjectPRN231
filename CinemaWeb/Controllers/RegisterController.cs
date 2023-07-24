@@ -23,12 +23,17 @@ namespace CinemaWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(UserRegisterRequest registerRequest)
+        public IActionResult Register(UserRegisterRequest registerRequest, string PasswordRepeat)
         {
             if (registerRequest != null && ModelState.IsValid)
             {
                 try
                 {
+                    if (!String.IsNullOrEmpty(PasswordRepeat) && !PasswordRepeat.Equals(registerRequest.Password))
+                    {
+                        ViewBag.Message = "Mật khẩu không trùng khớp";
+                        return View("Index");
+                    }
                     var request = new HttpRequestMessage
                     {
                         Method = HttpMethod.Post,
