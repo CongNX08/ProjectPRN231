@@ -39,13 +39,13 @@ namespace CinemaWeb.Controllers
         }
 
 
-        public async Task<IActionResult> Index(string? titleSearch, int? genreId, int pageNumber = 1, int pageSize = 9)
+        public async Task<IActionResult> Index(string? titleSearch, int? genreId, int?year, int pageNumber = 1, int pageSize = 9)
         {
             await LoadGenresList(); // Call the method to load genres list
 
 
             // Construct the API URL with titleSearch and genreId as query parameters
-            string url = $"{MovieUrl}?titleSearch={titleSearch}&filterGenre={genreId}&pageSize={pageSize}&pageNumber={pageNumber}";
+            string url = $"{MovieUrl}?titleSearch={titleSearch}&filterGenre={genreId}&year={year}&pageSize={pageSize}&pageNumber={pageNumber}";
 
             HttpResponseMessage response = await client.GetAsync(url);
             string strData = await response.Content.ReadAsStringAsync();
