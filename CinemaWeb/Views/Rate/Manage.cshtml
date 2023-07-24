@@ -31,12 +31,12 @@
                         </div>
                         @ViewBag.Movie.Genre
                     </div>
-                  
+
                 </div>
 
 
                 <div class="flex items-center content-center">
-                   <div class="flex">
+                    <div class="flex">
                         <div class="text-yellow-500 font-semibold mr-1">
                             Rate:
                         </div>
@@ -69,16 +69,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @if (Model != null)
                         {
-                            <tr class="bg-white border-b bg-gray-50 text-back-900">
-                                <td scope="row" class="py-4 px-8 border border-slate-300">@item.PersonName</td>
-                                <td class="py-4 px-8 border border-slate-300">@item.Comment</td>
-                                <td class="py-4 px-8 border border-slate-300">@item.Time</td>
-                                <td class="py-4 px-8 border border-slate-300">
-                                    <a asp-controller="Rate" asp-action="Delete" asp-route-movieID="@item.MovieId" asp-route-personID="@item.PersonId" class="btn btn-danger"> <i class="bi bi-trash3-fill"></i>Delete </a>
-                                </td>
-                            </tr>
+                            foreach (var item in Model)
+                            {
+                                <tr class="bg-white border-b bg-gray-50 text-back-900">
+                                    <td scope="row" class="py-4 px-8 border border-slate-300">@item.PersonName</td>
+                                    <td class="py-4 px-8 border border-slate-300">@item.Comment</td>
+                                    <td class="py-4 px-8 border border-slate-300">@item.Time</td>
+                                    <td class="py-4 px-8 border border-slate-300">
+                                        <a asp-controller="Rate" asp-action="Delete" asp-route-movieID="@item.MovieId" asp-route-personID="@item.PersonId" class="btn btn-danger"> <i class="bi bi-trash3-fill"></i>Delete </a>
+                                    </td>
+                                </tr>
+                            }
                         }
 
                     </tbody>

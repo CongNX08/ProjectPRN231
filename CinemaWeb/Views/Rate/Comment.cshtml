@@ -57,19 +57,22 @@
                 Comment
             </div>
             <form method="post">
-                @foreach (var item in Model)
+                @if (Model != null)
                 {
-                    <div class="grid grid-cols-8 gap-4  mt-3 p-1 ">
-                        <div class="col-span-1 mt-1">
-                            <img class="w-10 h-10 rounded-full" src=" @ViewBag.Movie.Image " alt="FirstSlide">
-                        </div>
-                        <div class="col-span-7">
-                            <div>@item.PersonName</div>
-                            <div>@item.Comment</div>
-                            <div>@item.Time</div>
+                    foreach (var item in Model)
+                    {
+                        <div class="grid grid-cols-8 gap-4  mt-3 p-1 ">
+                            <div class="col-span-1 mt-1">
+                                <img class="w-10 h-10 rounded-full" src=" @ViewBag.Movie.Image " alt="FirstSlide">
+                            </div>
+                            <div class="col-span-7">
+                                <div>@item.PersonName</div>
+                                <div>@item.Comment</div>
+                                <div>@item.Time</div>
 
+                            </div>
                         </div>
-                    </div>
+                    }
                 }
                 @{
                     string username = Context.Session.GetString("FullName");

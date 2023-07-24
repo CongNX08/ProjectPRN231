@@ -51,6 +51,10 @@ namespace CinemaWeb.Controllers
             {
                 PropertyNameCaseInsensitive = true
             };
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return View();
+            }
             dynamic dataObj = JsonConvert.DeserializeObject(strData);
             string data = dataObj.result.ToString();
             rate = System.Text.Json.JsonSerializer.Deserialize<List<RateDTO>>(data, options);
@@ -119,6 +123,10 @@ namespace CinemaWeb.Controllers
             {
                 PropertyNameCaseInsensitive = true
             };
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return View();
+            }
             dynamic dataObj = JsonConvert.DeserializeObject(strData);
             string data = dataObj.result.ToString();
             rate = System.Text.Json.JsonSerializer.Deserialize<List<RateDTO>>(data, options);
