@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Diagnostics.Eventing.Reader;
+
 namespace CinemaWeb
 {
     public class Program
@@ -27,7 +30,7 @@ namespace CinemaWeb
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();
             app.MapControllerRoute(

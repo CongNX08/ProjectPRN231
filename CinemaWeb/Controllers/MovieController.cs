@@ -1,4 +1,6 @@
-﻿using DataAccess.DTO;
+﻿using CinemaWebAPI.Config;
+using DataAccess.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net.Http;
@@ -40,6 +42,12 @@ namespace CinemaWeb.Controllers
 
         public async Task<IActionResult> List(string? titleSearch, int? genreId, int pageNumber = 1, int pageSize = 3)
         {
+            string username = HttpContext.Session.GetString("FullName");
+            string usertype = HttpContext.Session.GetString("UserType");
+            if (String.IsNullOrEmpty(username) || !usertype.Equals(Constants.UserType.ADMIN.ToString()))
+            {
+                return RedirectToAction("AccessDenied", "Error");
+            }
             await LoadGenresList(); // Call the method to load genres list
 
 
@@ -69,7 +77,7 @@ namespace CinemaWeb.Controllers
             }
             else
             {
-                
+
                 ViewBag.TotalPage = 1;
             }
             ViewData["pageNumber"] = pageNumber;
@@ -83,7 +91,12 @@ namespace CinemaWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-
+            string username = HttpContext.Session.GetString("FullName");
+            string usertype = HttpContext.Session.GetString("UserType");
+            if (String.IsNullOrEmpty(username) || !usertype.Equals(Constants.UserType.ADMIN.ToString()))
+            {
+                return RedirectToAction("AccessDenied", "Error");
+            }
             await LoadGenresList(); // Call the method to load genres list
 
             // Pass the GenresList to the view
@@ -101,6 +114,12 @@ namespace CinemaWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
+            string username = HttpContext.Session.GetString("FullName");
+            string usertype = HttpContext.Session.GetString("UserType");
+            if (String.IsNullOrEmpty(username) || !usertype.Equals(Constants.UserType.ADMIN.ToString()))
+            {
+                return RedirectToAction("AccessDenied", "Error");
+            }
             await LoadGenresList(); // Call the method to load genres list
 
             string url = $"{MovieUrl}/{id}";
@@ -123,6 +142,12 @@ namespace CinemaWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int id, MovieDTO Movie)
         {
+            string username = HttpContext.Session.GetString("FullName");
+            string usertype = HttpContext.Session.GetString("UserType");
+            if (String.IsNullOrEmpty(username) || !usertype.Equals(Constants.UserType.ADMIN.ToString()))
+            {
+                return RedirectToAction("AccessDenied", "Error");
+            }
             //'https://localhost:7052/api/Movie/1045' \
             string url = $"{MovieUrl}/{id}";
             HttpResponseMessage response = await client.PutAsJsonAsync(url, Movie);
@@ -134,6 +159,12 @@ namespace CinemaWeb.Controllers
         //'https://localhost:7052/api/Movie?id=26' \
         public async Task<IActionResult> Delete(int id)
         {
+            string username = HttpContext.Session.GetString("FullName");
+            string usertype = HttpContext.Session.GetString("UserType");
+            if (String.IsNullOrEmpty(username) || !usertype.Equals(Constants.UserType.ADMIN.ToString()))
+            {
+                return RedirectToAction("AccessDenied", "Error");
+            }
             string url = $"{MovieUrl}?id={id}";
             HttpResponseMessage response = await client.DeleteAsync(url);
             if (!response.IsSuccessStatusCode)
