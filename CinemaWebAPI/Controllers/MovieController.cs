@@ -54,6 +54,12 @@ namespace CinemaWebAPI.Controllers
                 MovieTotal = await _dbMovie.GetAllAsync(u => u.Title.ToLower().Contains(search), includeProperties: "Genre");
 
             }
+            if (year != null)
+            {
+                MovieList = await _dbMovie.GetAllAsync(u => u.Year == year, includeProperties: "Genre", pageSize: pageSize, pageNumber: pageNumber);
+                MovieTotal = await _dbMovie.GetAllAsync(u => u.Year == year, includeProperties: "Genre");
+
+            }
 
             List<MovieDTO> listDTO = _mapper.Map<List<MovieDTO>>(MovieList);
             List<MovieDTO> listDTO2 = _mapper.Map<List<MovieDTO>>(MovieTotal);
