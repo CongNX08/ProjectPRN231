@@ -29,5 +29,14 @@ namespace CinemaWebAPI.Controllers
             IEnumerable<GenreDTO> GenreDTOList = _mapper.Map<IEnumerable<GenreDTO>>(GenreList);
             return Ok(GenreDTOList);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<GenreDTO>>> GetOneGenres()
+        {
+
+            IEnumerable<Genre> GenreList = await _dbGenre.GetAllAsync();
+            IEnumerable<GenreDTO> GenreDTOList = _mapper.Map<IEnumerable<GenreDTO>>(GenreList);
+            return Ok(GenreDTOList);
+        }
     }
 }
